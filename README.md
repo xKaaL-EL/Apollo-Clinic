@@ -1,109 +1,276 @@
-# 🏥 Apollo Clinic Portal - Spring Boot Edition
+<div align="center">
 
-A modern, enterprise-ready **Spring Boot (Java 21)** clinical administration web application backed by **MySQL / MariaDB**, featuring a responsive **Thymeleaf & Bootstrap 5** single-page web UI and full REST APIs.
+# 🏥 Apollo Clinic Portal
 
----
+**A practical clinic management system built with Java, Spring Boot and MySQL**
 
-## 🏗️ Architecture & Technology Stack
+Manage patient records, appointments, prescriptions, follow-ups and billing from one place.
 
-* **Backend Framework:** Spring Boot 3.3.4 (Java 21)
-* **Persistence Layer:** Spring Data JPA / Hibernate
-* **Database:** MySQL / MariaDB (with automatic H2 profile support for unit testing)
-* **View Layer:** Thymeleaf, HTML5, Bootstrap 5, Bootstrap Icons, and Vanilla JavaScript (AJAX SPA)
-* **Build Tool:** Gradle / Maven
+</div>
 
 ---
 
-## 📂 Project Structure
+## About the project
+
+Apollo Clinic Portal is a web application for handling the day-to-day administrative work of a clinic. It brings the main clinic modules into one dashboard, with login sessions, separate permissions for administrators and receptionists, and PDF generation for prescriptions and invoices.
+
+This project uses Spring Boot for the backend, Thymeleaf and Bootstrap for the interface, and a relational database for storing clinic records.
+
+## ✨ What it can do
+
+- 📊 **Dashboard:** A sidebar-based interface with tables, forms, search and sorting.
+- 🔐 **Login and roles:** Session-based authentication for `ADMIN` and `RECEPTIONIST` users.
+- 🧑‍⚕️ **Doctors and patients:** Maintain clinic staff and patient records.
+- 📅 **Appointments:** Create and manage appointment records.
+- 💊 **Medicines:** Maintain medicine details and stock information.
+- 📝 **Prescriptions:** Manage prescriptions and generate prescription PDFs.
+- 🔁 **Follow-ups:** Keep follow-up records and notes.
+- 🧾 **Billing:** Manage bills and see whether an invoice is paid or unpaid.
+- 📄 **PDFs:** View or download prescription and invoice documents.
+- 🔌 **REST API:** Endpoints for the main clinic modules.
+- 🗄️ **Database options:** MySQL or MariaDB for local use, with H2 for tests when the test configuration enables it.
+
+## 🧰 Built with
+
+| Technology | Used for |
+| --- | --- |
+| Java 21 | Application code |
+| Spring Boot 3.3.4 | Backend and application configuration |
+| Spring Data JPA / Hibernate | Database access and entity mapping |
+| MySQL 8+ / MariaDB | Main database |
+| H2 | In-memory tests, when configured |
+| Thymeleaf | Rendering the web pages |
+| Bootstrap 5, CSS and JavaScript | Dashboard interface and interactions |
+| OpenPDF | Prescription and invoice PDFs |
+| Gradle Wrapper | Building and running the project |
+
+## 💻 Before you start
+
+Install these on your computer:
+
+- **JDK 21**
+- **MySQL 8+ or MariaDB**
+- A modern web browser
+
+You do not need to install Gradle separately. The project includes the Gradle Wrapper.
+
+## 🚀 Run it on your computer
+
+### 1. Get the project
+
+Once the repository is on GitHub, clone it using the URL of your own repository:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/apollo-clinic-portal.git
+cd apollo-clinic-portal
+```
+
+Replace `YOUR_USERNAME` with the GitHub username that owns the repository. If you prefer, use GitHub's **Code → Download ZIP** option instead.
+
+### 2. Create the database
+
+Start your MySQL or MariaDB server. Create the database using the name configured in your application.
+
+For example, if the project is configured to use `hospital_db`, run:
+
+```sql
+CREATE DATABASE IF NOT EXISTS hospital_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+```
+
+**Keep the database name consistent.** Check `application.properties` and `schema.sql` before changing it; if your project uses a different name, use that name instead.
+
+### 3. Set up database credentials 🔐
+
+The repository should not contain your real database password. Configure these environment variables on your own computer:
 
 ```text
-Hospital-Management-System/
-├── src/main/java/com/hospital/hms/
-│   ├── HospitalManagementSystemApplication.java   # Spring Boot Entry Point
-│   ├── controller/
-│   │   ├── api/                                 # REST Controllers (JSON Endpoints)
-│   │   └── web/                                 # Web MVC Controllers (Thymeleaf UI)
-│   ├── dto/                                     # Data Transfer Objects
-│   ├── exception/                               # Custom Exception Handlers
-│   ├── model/
-│   │   ├── entity/                              # JPA Entities (Doctor, Patient, etc.)
-│   │   └── enums/                               # Gender, BillStatus Enums
-│   ├── repository/                              # Spring Data JPA Interfaces
-│   ├── service/                                 # Business Logic Interfaces & Impls
-│   └── util/                                    # Legacy Data Seeder & Migrator
-├── src/main/resources/
-│   ├── application.properties                   # MySQL Connection Configuration
-│   └── templates/                               # Thymeleaf UI Templates (login.html, dashboard.html)
-├── schema.sql                                   # MySQL Database Setup Script
-└── build.gradle / pom.xml                       # Gradle & Maven Build Files
+DB_URL=jdbc:mysql://localhost:3306/hospital_db
+DB_USERNAME=your_mysql_username
+DB_PASSWORD=your_mysql_password
 ```
 
----
-
-## 🛢️ Database Setup & Connection Process
-
-Follow these steps to configure and connect the application to **MySQL / MariaDB**:
-
-### Step 1: Create the Database & User
-Log in to your MySQL / MariaDB console:
-```sql
-CREATE DATABASE IF NOT EXISTS hospital_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-Alternatively, you can execute the provided `schema.sql` script directly in your MySQL client:
-```bash
-mysql -u root -p < schema.sql
-```
-
-### Step 2: Configure Application Properties
-Open `src/main/resources/application.properties` and verify your database credentials match your local MySQL configuration:
+In `src/main/resources/application.properties`, the datasource settings can read those variables like this:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/hospital_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=1234
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=false
+spring.datasource.url=${DB_URL:jdbc:mysql://localhost:3306/hospital_db}
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
 ```
 
-> **Note:** If your MySQL password is different, update `spring.datasource.password=YOUR_PASSWORD` accordingly.
+Keep the rest of your existing configuration, including any SQL initialization and JPA settings the application needs.
 
----
+> **About `.env`:** Spring Boot does not automatically load a `.env` file by default. You can set environment variables in your operating system or use a suitable local `.env` loader. Keep the real `.env` file out of Git. If you include `.env.example`, use placeholder values only.
 
-## 🚀 Getting Started & Running the Application
+### 4. Start the application
 
-### Prerequisites
-* **JDK 21+** installed on your system.
-* **MySQL / MariaDB** server running.
+Open a terminal in the project root folder.
 
-### 1. Build the Project
-Using Gradle Wrapper:
-```bash
-./gradlew build
+**Windows (PowerShell):**
+
+```powershell
+.\gradlew.bat bootRun
 ```
-*(Or `./gradlew bootRun` directly)*
 
-### 2. Run the Application
-Execute the Spring Boot bootRun task:
+**Linux / macOS:**
+
 ```bash
 ./gradlew bootRun
 ```
-* **Auto-Seeding:** On startup, the application automatically seeds default credentials and imports all historical records from legacy flat files (`doctor.txt`, `patient.txt`, `appointment.txt`, etc.).
 
-### 3. Access the Web Portal
-Open your web browser and go to:
-👉 **`http://localhost:8080`**
+Wait for the application to finish starting, then open this address in your browser:
 
-* **Default Administrator Login:**
-  * **Username:** `admin`
-  * **Password:** `1234`
+```text
+http://localhost:8080
+```
+
+Log in using an account configured in your local database or by the application's seeding logic. Do not rely on a default username or password unless you have confirmed that it is configured in your copy of the project.
+
+## 👥 User roles and access
+
+The application supports two roles. The table below summarises the intended access; the actual permissions are determined by the server-side authorization rules.
+
+| Module | ADMIN | RECEPTIONIST |
+| --- | --- | --- |
+| Doctors | Full access | View only |
+| Patients | Full access | Full access |
+| Appointments | Full access | Full access |
+| Follow-ups | Full access | Full access |
+| Bills | Full access | View and PDF access |
+| Prescriptions | Full access | View and PDF access |
+| Medicines | Full access | Check the configured authorization rules |
+
+The dashboard hides controls that a user is not allowed to use, and authorization is enforced on the server as well. In the source code, check `RoleAuthorizationInterceptor.java` for the implemented rules.
+
+## 🔌 REST API
+
+### Authentication
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | Log in |
+| `GET` | `/api/auth/me` | Get the current session user |
+| `POST` | `/api/auth/logout` | Log out |
+
+### Clinic modules
+
+| Module | Base endpoint |
+| --- | --- |
+| Patients | `/api/patients` |
+| Doctors | `/api/doctors` |
+| Appointments | `/api/appointments` |
+| Medicines | `/api/medicines` |
+| Prescriptions | `/api/prescriptions` |
+| Follow-ups | `/api/followups` |
+| Bills | `/api/bills` |
+
+The HTTP methods available for each module depend on its controller mappings and the logged-in user's permissions.
+
+### 📄 Prescription and invoice PDFs
+
+| Document | View PDF | Download PDF |
+| --- | --- | --- |
+| Prescription | `GET /api/prescriptions/{id}/pdf` | `GET /api/prescriptions/{id}/pdf/download` |
+| Invoice | `GET /api/bills/{id}/pdf` | `GET /api/bills/{id}/pdf/download` |
+
+Replace `{id}` with the relevant record ID.
+
+## 🌱 Demo and seed data
+
+The project includes SQL initialization and sample-data seeding components for local development. The demo records are fictional and are useful for trying out the dashboard without entering every record manually.
+
+The exact startup behaviour depends on the SQL initialization settings and seeding code in the project. Keep demo data fictional; never publish real patient records or confidential clinic information.
+
+## 🧪 Run tests and build
+
+Run the test suite:
+
+**Windows:**
+
+```powershell
+.\gradlew.bat test
+```
+
+**Linux / macOS:**
+
+```bash
+./gradlew test
+```
+
+Tests configured to use H2 can run without a MySQL server.
+
+Build the project:
+
+**Windows:**
+
+```powershell
+.\gradlew.bat build
+```
+
+**Linux / macOS:**
+
+```bash
+./gradlew build
+```
+
+The build output is written to the Gradle `build/` directory.
+
+## 📂 Project layout
+
+```text
+apollo-clinic-portal/
+├── gradle/
+│   └── wrapper/
+├── src/
+│   ├── main/
+│   │   ├── java/com/hospital/hms/
+│   │   │   ├── controller/
+│   │   │   ├── dto/
+│   │   │   ├── exception/
+│   │   │   ├── model/
+│   │   │   ├── repository/
+│   │   │   ├── service/
+│   │   └── resources/
+│   │       ├── static/
+│   │       │   ├── css/portal.css
+│   │       │   └── js/portal.js
+│   │       ├── templates/
+│   │       │   ├── login.html
+│   │       │   └── dashboard.html
+│   │       ├── application.properties
+│   │       └── schema.sql
+│   └── test/
+├── .gitignore
+├── build.gradle
+├── settings.gradle
+├── gradlew
+├── gradlew.bat
+└── README.md
+```
+
+This is a guide to the main parts of the project; your repository may contain additional files.
+
+## 🛡️ Before publishing or deploying
+
+- Keep `.env`, passwords, API keys and other secrets out of Git.
+- Use `.gitignore` to exclude local environment files, build output and IDE-specific files.
+- If a secret has already been committed, removing it from the latest version is not enough. Rotate the exposed credential and clean the Git history if needed.
+- Use a database account with only the permissions the application needs.
+- Change any development credentials before deployment.
+- Make sure passwords are stored using a suitable password-hashing mechanism.
+- Use HTTPS and review session settings before exposing the application publicly.
+- Test authorization on protected endpoints; hiding a button is not a security measure.
+- Do not upload real patient data.
+
+A local development setup should be reviewed before being used in a public or production environment.
 
 ---
 
-## 🛠️ Key Technical Capabilities
+<div align="center">
 
-* **Dual Interface Support:** Full REST API endpoints (`/api/...`) paired with a responsive Bootstrap 5 web dashboard.
-* **Smart Relational Resolution:** Automated mapping of foreign key IDs to real human names (e.g. displaying patient and doctor names instead of raw numeric IDs).
-* **Dynamic Sorting & Real-Time Search:** Instant client-side and server-side filtering across all modules (Doctors, Patients, Appointments, Bills, Follow-Ups, Medicine, Prescriptions).
-* **Zero-Downtime Migration:** Seamlessly migrates legacy flat-file datasets into relational MySQL tables on boot.
+**❤️ Apollo Clinic Portal**
+
+*Built to make everyday clinic administration a little simpler.*
+
+</div>
