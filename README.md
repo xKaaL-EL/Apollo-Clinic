@@ -50,7 +50,6 @@ Install these on your computer:
 
 - **JDK 21**
 - **MySQL 8+ or MariaDB**
-- A modern web browser
 
 You do not need to install Gradle separately. The project includes the Gradle Wrapper.
 
@@ -64,8 +63,6 @@ Once the repository is on GitHub, clone it using the URL of your own repository:
 git clone https://github.com/YOUR_USERNAME/apollo-clinic-portal.git
 cd apollo-clinic-portal
 ```
-
-Replace `YOUR_USERNAME` with the GitHub username that owns the repository. If you prefer, use GitHub's **Code → Download ZIP** option instead.
 
 ### 2. Create the database
 
@@ -176,12 +173,6 @@ The HTTP methods available for each module depend on its controller mappings and
 
 Replace `{id}` with the relevant record ID.
 
-## 🌱 Demo and seed data
-
-The project includes SQL initialization and sample-data seeding components for local development. The demo records are fictional and are useful for trying out the dashboard without entering every record manually.
-
-The exact startup behaviour depends on the SQL initialization settings and seeding code in the project. Keep demo data fictional; never publish real patient records or confidential clinic information.
-
 ## 🧪 Run tests and build
 
 Run the test suite:
@@ -249,6 +240,7 @@ apollo-clinic-portal/
 └── README.md
 ```
 
+<<<<<<< HEAD
 This is a guide to the main parts of the project; your repository may contain additional files.
 
 ## 📸 Screenshots
@@ -295,6 +287,8 @@ This is a guide to the main parts of the project; your repository may contain ad
 
 A local development setup should be reviewed before being used in a public or production environment.
 
+=======
+>>>>>>> fd04b99057f8cc88caf07230e2d4b63ee633d01d
 ---
 
 <div align="center">
