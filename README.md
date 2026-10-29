@@ -1,4 +1,4 @@
-# 🏥 Hospital Management System (HMS) - Spring Boot Edition
+# 🏥 Apollo Clinic Portal - Spring Boot Edition
 
 A modern, enterprise-ready **Spring Boot (Java 21)** clinical administration web application backed by **MySQL / MariaDB**, featuring a responsive **Thymeleaf & Bootstrap 5** single-page web UI and full REST APIs.
 
@@ -42,10 +42,10 @@ Hospital-Management-System/
 
 ## 🛢️ Database Setup & Connection Process
 
-Follow these steps to configure and connect the application with **MySQL / MariaDB**:
+Follow these steps to configure and connect the application to **MySQL / MariaDB**:
 
 ### Step 1: Create the Database & User
-Log into your MySQL / MariaDB console:
+Log in to your MySQL / MariaDB console:
 ```sql
 CREATE DATABASE IF NOT EXISTS hospital_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
