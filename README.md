@@ -251,6 +251,36 @@ apollo-clinic-portal/
 
 This is a guide to the main parts of the project; your repository may contain additional files.
 
+## 📸 Screenshots
+
+### Login Page
+
+![Apollo Clinic Portal login page](ScreenShots/login.png)
+
+### Doctors Management
+
+![Doctors management screen](ScreenShots/Screenshot%20(19).png)
+
+### Patients Management
+
+![Patients management screen](ScreenShots/Screenshot%20(25).png)
+
+### Billing Management
+
+![Billing management screen](ScreenShots/Screenshot%20(44).png)
+
+### Prescription Management
+
+![Prescription management screen](ScreenShots/Screenshot%20(45).png)
+
+### Medicine Inventory
+
+![Medicine inventory screen](ScreenShots/Screenshot%20(46).png)
+
+### Appointments Management
+
+![Appointments management screen](ScreenShots/Screenshot%20(48).png)
+
 ## 🛡️ Before publishing or deploying
 
 - Keep `.env`, passwords, API keys and other secrets out of Git.
