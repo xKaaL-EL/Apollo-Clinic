@@ -1,0 +1,263 @@
+HOSPITAL MANAGEMENT SYSTEM - READ-ONLY ARCHITECTURAL REVIEW
+===============================================================
+
+Project type:
+Spring Boot + Thymeleaf + JavaScript + Spring Data JPA + MySQL college project.
+
+1. DATABASE TABLES
+------------------
+
+users
+- Authentication table.
+- Primary key: id.
+- Columns: username, password, role.
+- username is unique.
+- No foreign keys point to users.
+
+doctors
+- Stores doctor information.
+- Primary key: id.
+- Columns: name, gender, age, specialization, contact.
+- Referenced by appointments.
+
+patients
+- Stores patient information.
+- Primary key: id.
+- Columns: name, gender, age, ailment.
+- Referenced by appointments, bills, and followups.
+
+appointments
+- Connects one patient with one doctor.
+- Primary key: id.
+- Foreign keys:
+  - patient_id -> patients.id
+  - doctor_id -> doctors.id
+- Also contains date and time.
+
+bills
+- Stores billing information for a patient.
+- Primary key: id.
+- Foreign key:
+  - patient_id -> patients.id
+- Contains amount and status.
+
+followups
+- Stores follow-up visit details.
+- Primary key: id.
+- Foreign key:
+  - patient_id -> patients.id
+- Contains next_date and notes.
+
+medicines
+- Stores medicine inventory.
+- Primary key: id.
+- Contains name, stock, and price.
+- No foreign key relationship to another table.
+
+prescriptions
+- Stores prescription information for appointments.
+- Primary key: id.
+- Foreign key:
+  - appointment_id -> appointments.id
+- medicine_details is free text; it is NOT a foreign key to medicines.
+- Contains dosage text.
+
+2. RELATIONSHIP DIAGRAM
+-----------------------
+
+users
+  |
+  +-- independent authentication table
+
+doctors
+  |
+  +-- 1 doctor has many appointments
+                         |
+patients ---------------+
+  |
+  +-- many bills
+  |
+  +-- many followups
+
+appointments
+  |
+  +-- many prescriptions
+
+medicines
+  |
+  +-- independent inventory table
+
+Formal relationships:
+- doctors.id       1 -> many appointments.doctor_id
+- patients.id      1 -> many appointments.patient_id
+- patients.id      1 -> many bills.patient_id
+- patients.id      1 -> many followups.patient_id
+- appointments.id  1 -> many prescriptions.appointment_id
+
+3. CREATE, EDIT, DELETE FLOW
+----------------------------
+
+Browser dashboard.html
+  -> REST Controller
+  -> Service implementation
+  -> Spring Data JPA Repository
+  -> MySQL table
+
+Doctor create:
+- dashboard.html saveDoctor()
+- POST /api/doctors
+- DoctorApiController.createDoctor()
+- DoctorServiceImpl.createDoctor()
+- DoctorRepository.save()
+
+Doctor edit:
+- openEditModal(id) loads GET /api/doctors/{id}
+- saveDoctor() sends PUT /api/doctors/{id}
+- DoctorServiceImpl.updateDoctor() first calls findById()
+- It changes fields and calls doctorRepository.save()
+
+Doctor delete:
+- dashboard.html deleteRecord(id)
+- DELETE /api/doctors/{id}
+- DoctorApiController.deleteDoctor()
+- DoctorServiceImpl.deleteDoctor()
+- doctorRepository.findById()
+- doctorRepository.delete()
+
+Patient follows the same pattern:
+- PatientApiController
+- PatientServiceImpl
+- PatientRepository
+
+Appointment flow:
+- Create/edit first verifies that the selected patient and doctor exist.
+- It calls patientRepository.findById() and doctorRepository.findById().
+- If either is missing, ResourceNotFoundException is thrown.
+- Then appointmentRepository.save() is called.
+- Delete uses appointmentRepository.delete().
+
+Relevant files:
+- src/main/resources/templates/dashboard.html
+- src/main/java/com/hospital/hms/controller/api/DoctorApiController.java
+- src/main/java/com/hospital/hms/controller/api/PatientApiController.java
+- src/main/java/com/hospital/hms/controller/api/AppointmentApiController.java
+- src/main/java/com/hospital/hms/service/impl/DoctorServiceImpl.java
+- src/main/java/com/hospital/hms/service/impl/PatientServiceImpl.java
+- src/main/java/com/hospital/hms/service/impl/AppointmentServiceImpl.java
+- src/main/java/com/hospital/hms/repository/DoctorRepository.java
+- src/main/java/com/hospital/hms/repository/PatientRepository.java
+- src/main/java/com/hospital/hms/repository/AppointmentRepository.java
+
+4. DELETE AND FOREIGN-KEY BEHAVIOUR
+-----------------------------------
+
+The schema.sql file defines ON DELETE CASCADE:
+
+- Deleting a doctor can delete related appointments.
+- Deleting a patient can delete related appointments, bills, and followups.
+- Deleting an appointment can delete related prescriptions.
+- Deleting an appointment through patient/doctor cascade can also remove prescriptions.
+
+Expected cascade tree:
+
+doctor
+  +-- appointments
+        +-- prescriptions
+
+patient
+  +-- appointments
+  |     +-- prescriptions
+  +-- bills
+  +-- followups
+
+However, a read-only inspection of the current live MySQL database showed:
+DELETE_RULE = NO ACTION
+
+This means the current live database constraints do not currently behave like the ON DELETE CASCADE definitions in schema.sql.
+
+Therefore, in the current database:
+- A parent with child records may fail with a foreign-key error.
+- A parent with no child records can normally be deleted.
+- The application service does not manually delete child records.
+
+The difference may exist because:
+spring.jpa.hibernate.ddl-auto=update
+
+Hibernate update does not necessarily replace old foreign-key constraints with newer cascade rules.
+
+5. WHY SOME SEEDED RECORDS FAIL TO DELETE
+-----------------------------------------
+
+The code does not treat seeded and manually created records differently.
+
+Both eventually use:
+repository.delete(entity)
+
+The likely difference is related data.
+
+Example:
+- Manually created doctor with no appointment: deletion can succeed.
+- Seeded doctor with appointments: deletion can fail if the live database uses NO ACTION.
+
+The same applies to patients:
+- Patient with no appointments/bills/followups: likely succeeds.
+- Patient with related records: may fail with a foreign-key error.
+
+The record being seeded is not itself special. Its child records and the live database FK rule are the important factors.
+
+6. ORPHAN RECORDS
+-----------------
+
+Foreign-key columns are NOT NULL and foreign-key constraints exist.
+
+Under normal operation:
+- A child cannot reference a missing parent.
+- A parent deletion is either cascaded or rejected.
+- Normal application operations should not create orphan records.
+
+Orphans could only appear if foreign-key checks were disabled, data was imported incorrectly, or the schema was manually changed.
+
+7. SEEDING AND STARTUP
+----------------------
+
+Startup seeding is handled by:
+src/main/java/com/hospital/hms/util/DataSeeder.java
+
+It implements CommandLineRunner and:
+- Creates the admin user if username admin does not exist.
+- Looks for legacy files such as doctor.txt and patient.txt.
+- Uses existsById() before importing legacy records.
+- Skips legacy-file migration when files are absent.
+
+SQL startup configuration:
+src/main/resources/application.properties
+
+Current relevant settings:
+- spring.sql.init.mode=always
+- spring.sql.init.schema-locations=file:./schema.sql
+- spring.jpa.hibernate.ddl-auto=update
+
+schema.sql uses INSERT IGNORE with fixed IDs, so rerunning the same seed records should not create duplicate primary-key rows.
+
+8. VERIFIED BEHAVIOUR VS ASSUMPTIONS
+-------------------------------------
+
+Verified from source/database:
+- All eight tables and their primary keys.
+- All foreign-key relationships.
+- Controller -> service -> repository delete flow.
+- schema.sql cascade definitions.
+- Current live database FK rules reported NO ACTION.
+- JPA entities do not define CascadeType.REMOVE.
+- Services do not manually delete child records.
+- Seeded records are not given special delete treatment.
+
+Needs runtime testing:
+- Exact HTTP response when deleting a parent with children.
+- Exact browser alert after a foreign-key failure.
+- Whether the currently running app uses the latest compiled dashboard.html.
+- Whether any older imports were performed while FK checks were disabled.
+
+Final summary:
+The delete logic is the same for seeded and manually created data. Seeded records are more likely to fail because they usually have related appointments, bills, followups, or prescriptions. The current live database uses NO ACTION foreign keys, even though schema.sql declares ON DELETE CASCADE. This database/schema mismatch explains the different deletion behaviour.
+

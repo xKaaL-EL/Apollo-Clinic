@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apollo Clinic Portal | Sign In</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/portal.css?v=login-premium" th:href="@{/css/portal.css(v=login-premium)}">
+</head>
+<body class="login-page">
+<main class="login-layout">
+    <section class="login-visual" aria-label="Apollo Clinic healthcare message">
+        <img class="login-doctor" src="/images/apollo-doctor.png" alt="Doctor in a white coat with a stethoscope">
+        <div class="login-visual-copy"><span>Your Health</span><strong>Our Priority</strong><i></i><p>Efficient Care<br>Smarter Management<br>Healthier Tomorrows</p></div>
+    </section>
+    <section class="login-card" aria-label="Apollo Clinic Portal sign in">
+        <div class="login-brand"><i class="bi bi-hospital"></i><h1>Apollo Clinic Portal</h1><p>Care. Coordination. Confidence.</p></div>
+        <div class="login-body">
+            <div id="alertBox" class="alert login-alert d-none" role="alert" aria-live="assertive"></div>
+            <form id="loginForm">
+                <div class="mb-3"><label for="username" class="form-label login-label">Username</label><div class="input-group login-input-group"><span class="input-group-text"><i class="bi bi-person"></i></span><input type="text" class="form-control login-input" id="username" placeholder="Enter your username" required autofocus></div></div>
+                <div class="mb-4"><label for="password" class="form-label login-label">Password</label><div class="input-group login-input-group"><span class="input-group-text"><i class="bi bi-lock"></i></span><input type="password" class="form-control login-input" id="password" placeholder="Enter your password" required><button type="button" class="input-group-text login-password-toggle" id="togglePassword" aria-label="Show password"><i class="bi bi-eye"></i></button></div></div>
+                <button type="submit" class="btn btn-primary login-submit w-100"><i class="bi bi-arrow-right-circle me-2"></i>Sign In to Portal</button>
+            </form>
+        </div>
+        <div class="login-features" aria-label="Portal benefits">
+            <div class="login-feature"><i class="bi bi-shield-check"></i><span>Secure<br>Access</span></div>
+            <div class="login-feature"><i class="bi bi-people"></i><span>Efficient<br>Management</span></div>
+            <div class="login-feature"><i class="bi bi-file-earmark-medical"></i><span>Better<br>Patient Care</span></div>
+            <div class="login-feature"><i class="bi bi-heart"></i><span>Healthier<br>Community</span></div>
+        </div>
+    </section>
+</main>
+<footer class="portal-footer login-footer">&lt;/&gt; with ❤️ by Piku &amp; The Heroic KaaL-EL</footer>
+<script src="/js/portal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById("togglePassword").addEventListener("click", function() {
+    const password = document.getElementById("password");
+    const visible = password.type === "text";
+    password.type = visible ? "password" : "text";
+    this.setAttribute("aria-label", visible ? "Show password" : "Hide password");
+    this.querySelector("i").className = visible ? "bi bi-eye" : "bi bi-eye-slash";
+});
+document.getElementById("loginForm").addEventListener("submit", async function(e) { e.preventDefault(); const username = document.getElementById("username").value.trim(), password = document.getElementById("password").value, alertBox = document.getElementById("alertBox"), submitButton = this.querySelector("button[type=submit]"); alertBox.classList.add("d-none"); submitButton.disabled = true; submitButton.classList.add("disabled"); try { const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password }) }); const data = await response.json(); if (response.ok && data.success) window.location.href = "/dashboard"; else { alertBox.textContent = data.message || "Authentication failed. Please check your username and password."; alertBox.classList.remove("d-none"); } } catch (error) { alertBox.textContent = "Unable to connect to service. Please try again in a moment."; alertBox.classList.remove("d-none"); console.error("Login error:", error); } finally { submitButton.disabled = false; submitButton.classList.remove("disabled"); } });
+</script>
+</body>
+</html>
