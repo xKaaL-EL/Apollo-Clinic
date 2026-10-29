@@ -240,8 +240,6 @@ apollo-clinic-portal/
 └── README.md
 ```
 
-<<<<<<< HEAD
-This is a guide to the main parts of the project; your repository may contain additional files.
 
 ## 📸 Screenshots
 
@@ -273,23 +271,7 @@ This is a guide to the main parts of the project; your repository may contain ad
 
 ![Appointments management screen](ScreenShots/Screenshot%20(48).png)
 
-## 🛡️ Before publishing or deploying
 
-- Keep `.env`, passwords, API keys and other secrets out of Git.
-- Use `.gitignore` to exclude local environment files, build output and IDE-specific files.
-- If a secret has already been committed, removing it from the latest version is not enough. Rotate the exposed credential and clean the Git history if needed.
-- Use a database account with only the permissions the application needs.
-- Change any development credentials before deployment.
-- Make sure passwords are stored using a suitable password-hashing mechanism.
-- Use HTTPS and review session settings before exposing the application publicly.
-- Test authorization on protected endpoints; hiding a button is not a security measure.
-- Do not upload real patient data.
-
-A local development setup should be reviewed before being used in a public or production environment.
-
-=======
->>>>>>> fd04b99057f8cc88caf07230e2d4b63ee633d01d
----
 
 <div align="center">
 
