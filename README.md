@@ -60,7 +60,7 @@ You do not need to install Gradle separately. The project includes the Gradle Wr
 Clone it using the URL of the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/apollo-clinic-portal.git
+git clone https://github.com/xKaaL-EL/Apollo-Clinic.git
 cd apollo-clinic-portal
 ```
 
