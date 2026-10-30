@@ -57,7 +57,7 @@ You do not need to install Gradle separately. The project includes the Gradle Wr
 
 ### 1. Get the project
 
-Once the repository is on GitHub, clone it using the URL of your own repository:
+Clone it using the URL of the repository:
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/apollo-clinic-portal.git
