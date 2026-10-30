@@ -68,7 +68,7 @@ cd apollo-clinic-portal
 
 Start your MySQL or MariaDB server. Create the database using the name configured in your application.
 
-For example, if the project is configured to use `hospital_db`, run:
+For example, the project is configured to use `hospital_db`, run:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS hospital_db
@@ -76,11 +76,11 @@ CREATE DATABASE IF NOT EXISTS hospital_db
   COLLATE utf8mb4_unicode_ci;
 ```
 
-**Keep the database name consistent.** Check `application.properties` and `schema.sql` before changing it; if your project uses a different name, use that name instead.
+**Keep the database name consistent.** Check `application.properties` and `schema.sql` before changing it.
 
 ### 3. Set up database credentials 🔐
 
-The repository should not contain your real database password. Configure these environment variables on your own computer:
+The repository should not contain real database password. Configure these environment variables on your own computer:
 
 ```text
 DB_URL=jdbc:mysql://localhost:3306/hospital_db
