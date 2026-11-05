@@ -1,60 +1,97 @@
-# Apollo Clinic Portal
+<div align="center">
 
-Apollo Clinic Portal is a web-based clinic management system built with Java, Spring Boot, and MySQL. It helps clinics manage everyday administrative and clinical workflows, including patient records, appointments, doctor schedules, prescriptions, follow-ups, and billing. The app includes role-based access for administrators, receptionists, and doctors, along with PDF generation for prescriptions and invoices.
+# 🏥 Apollo Clinic Portal
 
----
+### Hospital Management System
 
-## Features
+A Java-based web application to manage clinic operations, including doctors, patients, appointments, prescriptions, medical records & billing.
 
-- **Role-Based Access Control**: Separate dashboards and permissions for `ADMIN`, `RECEPTIONIST`, and `DOCTOR` users.
-- **Doctor Dashboard**: Doctors have their own workspace to view today's schedule (sorted chronologically), filter appointments by date/time, and update their profile.
-- **Patient Medical Records**: Central view for patient info, appointment history, follow-up notes, and past prescriptions.
-- **Prescription Management**: Create and track prescriptions. Doctors can view all past prescriptions for a patient while only editing or deleting their own.
-- **PDF Generation**: Generate clean, branded PDFs for prescriptions and billing invoices with options to view inline or download.
-- **Appointments & Follow-ups**: Book appointments, filter schedules, and tie follow-up visits and notes to specific appointments.
-- **Billing & Invoices**: Create patient bills, track payment statuses (`PAID`, `UNPAID`, `OVERDUE`), and print invoices.
-- **Medicine Inventory**: Keep track of available pharmacy stock and pricing.
-- **Doctor Account Management**: Admins can register new doctor accounts and manage login credentials directly from the portal.
+<br>
 
----
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-8+-02303A?style=for-the-badge&logo=gradle&logoColor=white)
 
-## User Roles & Permissions
+![Hibernate](https://img.shields.io/badge/Hibernate-ORM-59666C?style=flat&logo=hibernate&logoColor=white)
+![Thymeleaf](https://img.shields.io/badge/Thymeleaf-Template_Engine-005F0F?style=flat&logo=thymeleaf&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.2-7952B3?style=flat&logo=bootstrap&logoColor=white)
+![OpenPDF](https://img.shields.io/badge/OpenPDF-2.0.3-blue?style=flat)
 
-| Module | ADMIN | RECEPTIONIST | DOCTOR |
-| --- | --- | --- | --- |
-| **Doctors** | Full access + Account creation | View only | View directory / Edit own profile |
-| **Doctor Dashboard** | — | — | Full access |
-| **Patients** | Full access | Full access | View assigned patients |
-| **Appointments** | Full access | Full access | View assigned appointments |
-| **Prescriptions** | Full access + PDF | View only + PDF | Create/Edit/Delete own + PDF |
-| **Follow-Ups** | Full access | View only | Create/Edit/Delete own |
-| **Bills & Invoices** | Full access + PDF | View only + PDF | No access |
-| **Medicine Inventory**| Full access | View only | No access |
+<br>
+
+
+</div>
 
 ---
 
-## Tech Stack
+## 📌 About the Project
 
-| Technology | Used For |
-| --- | --- |
-| Java 21 | Core application code |
-| Spring Boot 3.3.4 | Backend framework (Spring MVC, Spring Data JPA) |
-| MySQL 8+ / MariaDB | Main relational database |
-| H2 Database | In-memory database used for automated tests |
-| Thymeleaf | Server-side HTML page rendering |
-| Bootstrap 5 & Icons | Responsive styling and UI components |
-| OpenPDF | Generating prescription and invoice PDFs |
-| Gradle Wrapper | Build tool and dependency management |
+Apollo Clinic Portal is a Hospital Management System built using Java, Spring Boot and MySQL.
+
+It provides separate workspaces for Admin, Receptionist and Doctor, making it easier to manage clinic activities and patient records through a single application.
+
+## ✨ Features
+
+- 🔐 **Role-Based Login** – Separate access for Admin, Receptionist and Doctor.
+- 👨‍⚕️ **Doctor Management** – Manage doctor profiles and login accounts.
+- 🧑 **Patient Management** – Add, update and manage patient information.
+- 📅 **Appointment Management** – Schedule and manage appointments.
+- 🩺 **Doctor Dashboard** – View today's appointments and assigned appointments.
+- 📋 **Patient Medical Records** – Access patient history and prescription records.
+- 💊 **Prescription Management** – Create, update and manage prescriptions.
+- 🔄 **Follow-Up Management** – Schedule follow-up visits and maintain notes.
+- 🧾 **Billing Management** – Manage bills and payment statuses.
+- 📄 **PDF Generation** – Generate and download prescriptions and invoices.
+- 💉 **Medicine Inventory** – Manage medicine stock and pricing.
+- 🔎 **Search & Sorting** – Easily find and organize records.
+
+## 👥 User Roles & Permissions
+
+The application supports three roles with different permissions.
+
+| Module | 👑 Admin | 🧑‍💼 Receptionist | 🩺 Doctor |
+|---|:---:|:---:|:---:|
+| Doctors | Full Access | View | View |
+| Patients | Full Access | Full Access | Assigned Patients |
+| Appointments | Full Access | Full Access | View Assigned |
+| Prescriptions | Full Access | View + PDF | Own Prescriptions |
+| Follow-Ups | Full Access | View | Own Follow-Ups |
+| Billing | Full Access | View + PDF | ❌ |
+| Medicines | Full Access | View | ❌ |
+| Profile | Manage | — | Own Profile |
+
+*Access is enforced through server-side role authorization.*
+
+## 🛠️ Technology Stack
+
+| Technology | Purpose |
+|---|---|
+| ☕ Java 21 | Backend Programming |
+| 🍃 Spring Boot 3.3.4 | Application Framework |
+| Spring MVC | Web Controllers & REST APIs |
+| Spring Data JPA | Database Operations |
+| Hibernate | Object Relational Mapping |
+| 🐬 MySQL 8+ | Database |
+| Thymeleaf | Server-Side Templates |
+| HTML5, CSS3, JavaScript | Frontend |
+| Bootstrap 5.3.2 | UI Components |
+| OpenPDF 2.0.3 | PDF Generation |
+| Gradle 8+ | Build & Dependency Management |
 
 ---
 
-## Database Schema
+## 🗄️ Database Schema
 
-The database schema and sample data are defined in `schema.sql`. It initializes all tables and seeds starter data automatically when the application starts up.
+The application uses MySQL for storing users, doctors, patients, appointments, prescriptions, follow-ups, bills and medicines.
+
+The database schema and initial seed data are maintained in `schema.sql`.
+
+### Entity Relationship Diagram
 
 ```mermaid
 erDiagram
-    users ||--o| doctors : "account_id"
+    users ||--o| doctors : "account_id (1:1)"
     patients ||--o{ appointments : "patient_id"
     doctors ||--o{ appointments : "doctor_id"
     patients ||--o{ bills : "patient_id"
@@ -68,6 +105,7 @@ erDiagram
         varchar password
         varchar role
     }
+
     doctors {
         bigint id PK
         varchar name
@@ -77,6 +115,7 @@ erDiagram
         varchar contact
         bigint account_id FK,UK
     }
+
     patients {
         bigint id PK
         varchar name
@@ -84,6 +123,7 @@ erDiagram
         double age
         varchar ailment
     }
+
     appointments {
         bigint id PK
         bigint patient_id FK
@@ -91,12 +131,14 @@ erDiagram
         varchar date
         varchar time
     }
+
     bills {
         bigint id PK
         bigint patient_id FK
         double amount
         varchar status
     }
+
     followups {
         bigint id PK
         bigint patient_id FK
@@ -104,12 +146,14 @@ erDiagram
         varchar next_date
         text notes
     }
+
     medicines {
         bigint id PK
         varchar name
         int stock
         double price
     }
+
     prescriptions {
         bigint id PK
         bigint appointment_id FK
@@ -119,103 +163,137 @@ erDiagram
     }
 ```
 
----
+### Main Database Tables
 
-## Demo Accounts
-
-The database comes pre-seeded with these demo users for testing:
-
-| Role | Username | Password | Notes |
-| --- | --- | --- | --- |
-| **ADMIN** | `Piku` | `Piku@Apollo2026!` | Clinic administrator |
-| **ADMIN (Fallback)** | `admin` | `1234` | Default fallback admin |
-| **RECEPTIONIST** | `KaaL-EL` | `KaaLEL@Apollo2026!` | Front-desk staff |
-| **DOCTOR** | `aarav.sharma` | `Aarav@Apollo2026!` | Dr. Aarav Sharma (Cardiology) |
-| **DOCTOR** | `ananya.verma` | `Ananya@Apollo2026!` | Dr. Ananya Verma (Dermatology) |
-| **DOCTOR** | `rohan.mehta` | `Rohan@Apollo2026!` | Dr. Rohan Mehta (Orthopedics) |
+| Table | Description |
+|---|---|
+| `users` | Login accounts and roles |
+| `doctors` | Doctor information and account linking |
+| `patients` | Patient details |
+| `appointments` | Patient appointments |
+| `prescriptions` | Prescription information |
+| `followups` | Follow-up records |
+| `bills` | Patient billing information |
+| `medicines` | Medicine inventory |
 
 ---
 
-## Getting Started
+## 🚀 Installation & Setup
 
-### Prerequisites
+### Requirements
 
-- **Java JDK 21** or later
-- **MySQL 8+** or **MariaDB**
+- Java JDK 21
+- MySQL 8+ or MariaDB
+- Git
+- Web Browser
 
-### 1. Clone the repository
+*Gradle is already included through the Gradle Wrapper.*
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/xKaaL-EL/Apollo-Clinic.git
 cd Apollo-Clinic
 ```
 
-### 2. Create the database
+### 2. Create the Database
 
-Log in to your MySQL terminal and create the database:
+Open MySQL and execute:
 
 ```sql
 CREATE DATABASE IF NOT EXISTS hospital_db
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
 ```
 
-### 3. Configure credentials
+### 3. Configure Database
 
-Update `src/main/resources/application.properties` with your MySQL username and password, or set these environment variables:
+Open:
 
-```bash
-SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/hospital_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-SPRING_DATASOURCE_USERNAME=your_username
-SPRING_DATASOURCE_PASSWORD=your_password
+`src/main/resources/application.properties`
+
+Configure your database username and password, or use environment variables:
+
+```text
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
 ```
 
-### 4. Run the application
+### 4. Run the Application
 
-Start the app using the Gradle wrapper:
+**Windows:**
 
-**Windows (PowerShell):**
 ```powershell
 .\gradlew.bat bootRun
 ```
 
 **Linux / macOS:**
+
 ```bash
 ./gradlew bootRun
 ```
 
-Once running, open `http://localhost:8080` in your browser and log in with any of the demo accounts above.
+Once the application starts, open:
 
-- Admin / Receptionist dashboard: `http://localhost:8080/dashboard`
-- Doctor dashboard: `http://localhost:8080/doctor/dashboard`
+**http://localhost:8080/login**
+
+---
+
+## 🔑 Demo Login Credentials
+
+Use the following accounts to explore the application.
+
+| Role | Username | Password |
+|---|---|---|
+| 👑 Admin | `Piku` | `Piku@Apollo2026!` |
+| 🧑‍💼 Receptionist | `KaaL-EL` | `KaaLEL@Apollo2026!` |
+| 🩺 Doctor | `aarav.sharma` | `Aarav@Apollo2026!` |
+
+Additional doctor accounts are available in the database seed data.
 
 ---
 
-## Testing & Building
+## 📂 Project Structure
 
-Run tests (runs against an in-memory H2 database, no MySQL needed):
-
-```bash
-# Windows
-.\gradlew.bat test
-
-# Linux / macOS
-./gradlew test
+```text
+Apollo-Clinic/
+│
+├── gradle/
+│   └── wrapper/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/com/hospital/hms/
+│   │   │   ├── config/          # Application configuration & security
+│   │   │   ├── controller/      # API and web controllers
+│   │   │   ├── dto/             # Data Transfer Objects
+│   │   │   ├── exception/       # Exception handling
+│   │   │   ├── model/           # Entities and enums
+│   │   │   ├── repository/      # Database repositories
+│   │   │   ├── service/         # Business logic
+│   │   │   └── util/            # Utility classes and seeding
+│   │   │
+│   │   └── resources/
+│   │       ├── static/
+│   │       │   ├── css/
+│   │       │   └── js/
+│   │       ├── templates/       # HTML pages
+│   │       ├── application.properties
+│   │       └── schema.sql
+│   │
+│   └── test/                    # Application tests
+│
+├── ScreenShots/                 # Project screenshots
+├── build.gradle
+├── settings.gradle
+├── gradlew
+├── gradlew.bat
+└── README.md
 ```
-
-Build an executable JAR:
-
-```bash
-# Windows
-.\gradlew.bat build
-
-# Linux / macOS
-./gradlew build
-```
-
-The output JAR will be placed in `build/libs/`.
 
 ---
+
 
 ## Screenshots
 
@@ -239,3 +317,16 @@ The output JAR will be placed in `build/libs/`.
 
 ### Medicine Inventory
 ![Medicines](ScreenShots/Screenshot%20(46).png)
+
+
+## ❤️ Credits
+
+<div align="center">
+
+### Apollo Clinic Portal
+
+**Care. Coordination. Convenience. — Bringing Better Healthcare Management Together 💚**
+
+*</> with ❤️ by Piku & The Heroic KaaL-EL*
+
+</div>
