@@ -162,26 +162,26 @@ INSERT IGNORE INTO users (username, password, role) VALUES
 -- =====================================================
 
 INSERT IGNORE INTO doctors (id, name, gender, age, specialization, contact) VALUES
-    (1001, 'Dr. Aarav Sharma', 'MALE', 45, 'Cardiology', '9810001001'),
-    (1002, 'Dr. Ananya Verma', 'FEMALE', 38, 'Dermatology', '9810001002'),
-    (1003, 'Dr. Rohan Mehta', 'MALE', 42, 'Orthopedics', '9810001003'),
-    (1004, 'Dr. Priya Nair', 'FEMALE', 36, 'Pediatrics', '9810001004'),
-    (1005, 'Dr. Arjun Kulkarni', 'MALE', 48, 'General Medicine', '9810001005'),
-    (1006, 'Dr. Sneha Iyer', 'FEMALE', 34, 'ENT', '9810001006'),
-    (1007, 'Dr. Faizan Ahmed', 'MALE', 44, 'Neurology', '9810001007'),
-    (1008, 'Dr. Meera Chatterjee', 'FEMALE', 41, 'Gynecology', '9810001008'),
-    (1009, 'Dr. Karan Malhotra', 'MALE', 39, 'Pulmonology', '9810001009'),
-    (1010, 'Dr. Ishita Bose', 'FEMALE', 37, 'Ophthalmology', '9810001010'),
-    (1011, 'Dr. Vivek Sinha', 'MALE', 46, 'Gastroenterology', '9810001011'),
-    (1012, 'Dr. Ritu Kapoor', 'FEMALE', 40, 'Endocrinology', '9810001012'),
-    (1013, 'Dr. Nikhil Menon', 'MALE', 43, 'Urology', '9810001013'),
-    (1014, 'Dr. Kavita Rao', 'FEMALE', 35, 'Psychiatry', '9810001014'),
-    (1015, 'Dr. Siddharth Joshi', 'MALE', 41, 'Nephrology', '9810001015'),
-    (1016, 'Dr. Pooja Deshmukh', 'FEMALE', 38, 'Oncology', '9810001016'),
-    (1017, 'Dr. Aman Gupta', 'MALE', 37, 'Radiology', '9810001017'),
-    (1018, 'Dr. Shreya Das', 'FEMALE', 33, 'Rheumatology', '9810001018'),
-    (1019, 'Dr. Aditya Bansal', 'MALE', 49, 'General Surgery', '9810001019'),
-    (1020, 'Dr. Neha Srivastava', 'FEMALE', 36, 'Family Medicine', '9810001020');
+    (1001, 'Aarav Sharma', 'MALE', 45, 'Cardiology', '9810001001'),
+    (1002, 'Ananya Verma', 'FEMALE', 38, 'Dermatology', '9810001002'),
+    (1003, 'Rohan Mehta', 'MALE', 42, 'Orthopedics', '9810001003'),
+    (1004, 'Priya Nair', 'FEMALE', 36, 'Pediatrics', '9810001004'),
+    (1005, 'Arjun Kulkarni', 'MALE', 48, 'General Medicine', '9810001005'),
+    (1006, 'Sneha Iyer', 'FEMALE', 34, 'ENT', '9810001006'),
+    (1007, 'Faizan Ahmed', 'MALE', 44, 'Neurology', '9810001007'),
+    (1008, 'Meera Chatterjee', 'FEMALE', 41, 'Gynecology', '9810001008'),
+    (1009, 'Karan Malhotra', 'MALE', 39, 'Pulmonology', '9810001009'),
+    (1010, 'Ishita Bose', 'FEMALE', 37, 'Ophthalmology', '9810001010'),
+    (1011, 'Vivek Sinha', 'MALE', 46, 'Gastroenterology', '9810001011'),
+    (1012, 'Ritu Kapoor', 'FEMALE', 40, 'Endocrinology', '9810001012'),
+    (1013, 'Nikhil Menon', 'MALE', 43, 'Urology', '9810001013'),
+    (1014, 'Kavita Rao', 'FEMALE', 35, 'Psychiatry', '9810001014'),
+    (1015, 'Siddharth Joshi', 'MALE', 41, 'Nephrology', '9810001015'),
+    (1016, 'Pooja Deshmukh', 'FEMALE', 38, 'Oncology', '9810001016'),
+    (1017, 'Aman Gupta', 'MALE', 37, 'Radiology', '9810001017'),
+    (1018, 'Shreya Das', 'FEMALE', 33, 'Rheumatology', '9810001018'),
+    (1019, 'Aditya Bansal', 'MALE', 49, 'General Surgery', '9810001019'),
+    (1020, 'Neha Srivastava', 'FEMALE', 36, 'Family Medicine', '9810001020');
 
 UPDATE doctors d
 JOIN users u ON u.username = CASE d.id
