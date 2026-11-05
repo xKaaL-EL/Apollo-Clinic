@@ -11,5 +11,6 @@ public interface FollowUpRepository extends JpaRepository<FollowUp, Long> {
     List<FollowUp> findAllByOrderByIdAsc();
     List<FollowUp> findAllByOrderByNextDateAsc();
     List<FollowUp> findAllByPatientId(Long patientId);
+    List<FollowUp> findAllByAppointmentDoctorAccountId(Long accountId);
     List<FollowUp> findByPatientNameContainingIgnoreCaseOrNotesContainingIgnoreCaseOrNextDateContainingIgnoreCase(String name, String notes, String nextDate);
 }

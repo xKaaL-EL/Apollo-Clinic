@@ -20,8 +20,29 @@ CREATE TABLE IF NOT EXISTS doctors (
     gender VARCHAR(50) NOT NULL,
     age DOUBLE NOT NULL,
     specialization VARCHAR(255) NOT NULL,
-    contact VARCHAR(255) NOT NULL
+    contact VARCHAR(255) NOT NULL,
+    account_id BIGINT UNIQUE,
+    CONSTRAINT fk_doctor_account FOREIGN KEY (account_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
+
+-- Migration-safe doctor account column and constraints for existing databases.
+SET @doctor_account_column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'doctors' AND COLUMN_NAME = 'account_id');
+SET @doctor_account_column_sql = IF(@doctor_account_column_exists = 0, 'ALTER TABLE doctors ADD COLUMN account_id BIGINT NULL', 'SELECT 1');
+PREPARE doctor_account_column_stmt FROM @doctor_account_column_sql;
+EXECUTE doctor_account_column_stmt;
+DEALLOCATE PREPARE doctor_account_column_stmt;
+
+SET @doctor_account_unique_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'doctors' AND COLUMN_NAME = 'account_id' AND NON_UNIQUE = 0);
+SET @doctor_account_unique_sql = IF(@doctor_account_unique_exists = 0, 'ALTER TABLE doctors ADD UNIQUE KEY uq_doctors_account_id (account_id)', 'SELECT 1');
+PREPARE doctor_account_unique_stmt FROM @doctor_account_unique_sql;
+EXECUTE doctor_account_unique_stmt;
+DEALLOCATE PREPARE doctor_account_unique_stmt;
+
+SET @doctor_account_fk_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'doctors' AND COLUMN_NAME = 'account_id' AND REFERENCED_TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME = 'users');
+SET @doctor_account_fk_sql = IF(@doctor_account_fk_exists = 0, 'ALTER TABLE doctors ADD CONSTRAINT fk_doctor_account FOREIGN KEY (account_id) REFERENCES users(id)', 'SELECT 1');
+PREPARE doctor_account_fk_stmt FROM @doctor_account_fk_sql;
+EXECUTE doctor_account_fk_stmt;
+DEALLOCATE PREPARE doctor_account_fk_stmt;
 
 -- 3. Patients Table
 CREATE TABLE IF NOT EXISTS patients (
@@ -58,8 +79,15 @@ CREATE TABLE IF NOT EXISTS followups (
     patient_id BIGINT NOT NULL,
     next_date VARCHAR(50) NOT NULL,
     notes TEXT,
+    appointment_id BIGINT NULL,
     CONSTRAINT fk_followup_patient FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+SET @followup_appointment_column_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'followups' AND COLUMN_NAME = 'appointment_id');
+SET @followup_appointment_column_sql = IF(@followup_appointment_column_exists = 0, 'ALTER TABLE followups ADD COLUMN appointment_id BIGINT NULL', 'SELECT 1');
+PREPARE followup_appointment_column_stmt FROM @followup_appointment_column_sql;
+EXECUTE followup_appointment_column_stmt;
+DEALLOCATE PREPARE followup_appointment_column_stmt;
 
 -- 7. Medicines Table
 CREATE TABLE IF NOT EXISTS medicines (
@@ -75,6 +103,7 @@ CREATE TABLE IF NOT EXISTS prescriptions (
     appointment_id BIGINT NOT NULL,
     medicine_details VARCHAR(255) NOT NULL,
     dosage VARCHAR(255) NOT NULL,
+    prescription_date DATE,
     CONSTRAINT fk_prescription_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -90,25 +119,39 @@ CREATE TABLE IF NOT EXISTS prescriptions (
 
 -- COMPLETE FRESH DATA SEEDING
 
--- Users: 2
+-- Users: 22 (1 ADMIN, 1 STAFF, 20 DOCTOR accounts)
 
 -- All other tables: 20 records each
 
 -- =====================================================
 
--- 1. CLEAR EXISTING DATA
+-- 1. IDEMPOTENT SEED DATA (existing records are preserved)
 
 -- Backup your database before running this script.
-SET FOREIGN_KEY_CHECKS = 0;
-DELETE FROM prescriptions;
-DELETE FROM followups;
-DELETE FROM bills;
-DELETE FROM appointments;
-DELETE FROM medicines;
-DELETE FROM patients;
-DELETE FROM doctors;
-DELETE FROM users;
-SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT IGNORE INTO users (username, password, role) VALUES
+    ('Piku', 'Piku@Apollo2026!', 'ADMIN'),
+    ('KaaL-EL', 'KaaLEL@Apollo2026!', 'STAFF'),
+    ('aarav.sharma', 'Aarav@Apollo2026!', 'DOCTOR'),
+    ('ananya.verma', 'Ananya@Apollo2026!', 'DOCTOR'),
+    ('rohan.mehta', 'Rohan@Apollo2026!', 'DOCTOR'),
+    ('priya.nair', 'Priya@Apollo2026!', 'DOCTOR'),
+    ('arjun.kulkarni', 'Arjun@Apollo2026!', 'DOCTOR'),
+    ('sneha.iyer', 'Sneha@Apollo2026!', 'DOCTOR'),
+    ('faizan.ahmed', 'Faizan@Apollo2026!', 'DOCTOR'),
+    ('meera.chatterjee', 'Meera@Apollo2026!', 'DOCTOR'),
+    ('karan.malhotra', 'Karan@Apollo2026!', 'DOCTOR'),
+    ('ishita.bose', 'Ishita@Apollo2026!', 'DOCTOR'),
+    ('vivek.sinha', 'Vivek@Apollo2026!', 'DOCTOR'),
+    ('ritu.kapoor', 'Ritu@Apollo2026!', 'DOCTOR'),
+    ('nikhil.menon', 'Nikhil@Apollo2026!', 'DOCTOR'),
+    ('kavita.rao', 'Kavita@Apollo2026!', 'DOCTOR'),
+    ('siddharth.joshi', 'Siddharth@Apollo2026!', 'DOCTOR'),
+    ('pooja.deshmukh', 'Pooja@Apollo2026!', 'DOCTOR'),
+    ('aman.gupta', 'Aman@Apollo2026!', 'DOCTOR'),
+    ('shreya.das', 'Shreya@Apollo2026!', 'DOCTOR'),
+    ('aditya.bansal', 'Aditya@Apollo2026!', 'DOCTOR'),
+    ('neha.srivastava', 'Neha@Apollo2026!', 'DOCTOR');
 
 -- =====================================================
 
@@ -118,7 +161,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================
 
-INSERT INTO doctors (id, name, gender, age, specialization, contact) VALUES
+INSERT IGNORE INTO doctors (id, name, gender, age, specialization, contact) VALUES
     (1001, 'Dr. Aarav Sharma', 'MALE', 45, 'Cardiology', '9810001001'),
     (1002, 'Dr. Ananya Verma', 'FEMALE', 38, 'Dermatology', '9810001002'),
     (1003, 'Dr. Rohan Mehta', 'MALE', 42, 'Orthopedics', '9810001003'),
@@ -140,6 +183,22 @@ INSERT INTO doctors (id, name, gender, age, specialization, contact) VALUES
     (1019, 'Dr. Aditya Bansal', 'MALE', 49, 'General Surgery', '9810001019'),
     (1020, 'Dr. Neha Srivastava', 'FEMALE', 36, 'Family Medicine', '9810001020');
 
+UPDATE doctors d
+JOIN users u ON u.username = CASE d.id
+    WHEN 1001 THEN 'aarav.sharma' WHEN 1002 THEN 'ananya.verma'
+    WHEN 1003 THEN 'rohan.mehta' WHEN 1004 THEN 'priya.nair'
+    WHEN 1005 THEN 'arjun.kulkarni' WHEN 1006 THEN 'sneha.iyer'
+    WHEN 1007 THEN 'faizan.ahmed' WHEN 1008 THEN 'meera.chatterjee'
+    WHEN 1009 THEN 'karan.malhotra' WHEN 1010 THEN 'ishita.bose'
+    WHEN 1011 THEN 'vivek.sinha' WHEN 1012 THEN 'ritu.kapoor'
+    WHEN 1013 THEN 'nikhil.menon' WHEN 1014 THEN 'kavita.rao'
+    WHEN 1015 THEN 'siddharth.joshi' WHEN 1016 THEN 'pooja.deshmukh'
+    WHEN 1017 THEN 'aman.gupta' WHEN 1018 THEN 'shreya.das'
+    WHEN 1019 THEN 'aditya.bansal' WHEN 1020 THEN 'neha.srivastava'
+END
+SET d.account_id = u.id
+WHERE d.id BETWEEN 1001 AND 1020;
+
 
 -- =====================================================
 
@@ -149,7 +208,7 @@ INSERT INTO doctors (id, name, gender, age, specialization, contact) VALUES
 
 -- =====================================================
 
-INSERT INTO patients (id, name, gender, age, ailment) VALUES
+INSERT IGNORE INTO patients (id, name, gender, age, ailment) VALUES
     (2001, 'Rahul Mishra', 'MALE', 29, 'Seasonal allergic rhinitis'),
     (2002, 'Priyanka Singh', 'FEMALE', 34, 'Routine blood pressure review'),
     (2003, 'Amit Kumar', 'MALE', 51, 'Knee pain assessment'),
@@ -180,7 +239,7 @@ INSERT INTO patients (id, name, gender, age, ailment) VALUES
 
 -- =====================================================
 
-INSERT INTO appointments (id, patient_id, doctor_id, date, time) VALUES
+INSERT IGNORE INTO appointments (id, patient_id, doctor_id, date, time) VALUES
     (3001, 2001, 1002, '2026-10-26', '09:00 AM'),
     (3002, 2002, 1005, '2026-10-26', '09:30 AM'),
     (3003, 2003, 1003, '2026-10-26', '10:00 AM'),
@@ -213,7 +272,7 @@ INSERT INTO appointments (id, patient_id, doctor_id, date, time) VALUES
 
 -- =====================================================
 
-INSERT INTO bills (id, patient_id, amount, status) VALUES
+INSERT IGNORE INTO bills (id, patient_id, amount, status) VALUES
     (4001, 2001, 650.00, 'PAID'),
     (4002, 2002, 500.00, 'UNPAID'),
     (4003, 2003, 1200.00, 'PAID'),
@@ -244,7 +303,7 @@ INSERT INTO bills (id, patient_id, amount, status) VALUES
 
 -- =====================================================
 
-INSERT INTO followups (id, patient_id, next_date, notes) VALUES
+INSERT IGNORE INTO followups (id, patient_id, next_date, notes) VALUES
     (5001, 2001, '2026-11-05', 'Review allergy symptoms and treatment response.'),
     (5002, 2002, '2026-11-06', 'Review home blood pressure readings.'),
     (5003, 2003, '2026-11-06', 'Reassess knee mobility and pain symptoms.'),
@@ -275,7 +334,7 @@ INSERT INTO followups (id, patient_id, next_date, notes) VALUES
 
 -- =====================================================
 
-INSERT INTO medicines (id, name, stock, price) VALUES
+INSERT IGNORE INTO medicines (id, name, stock, price) VALUES
     (6001, 'Paracetamol 500 mg', 120, 18.00),
     (6002, 'Cetirizine 10 mg', 80, 24.00),
     (6003, 'Omeprazole 20 mg', 65, 42.00),
@@ -306,7 +365,7 @@ INSERT INTO medicines (id, name, stock, price) VALUES
 
 -- =====================================================
 
-INSERT INTO prescriptions (id, appointment_id, medicine_details, dosage) VALUES
+INSERT IGNORE INTO prescriptions (id, appointment_id, medicine_details, dosage) VALUES
     (7001, 3001, 'Cetirizine 10 mg', 'As prescribed by the treating clinician'),
     (7002, 3002, 'Amlodipine 5 mg', 'As prescribed by the treating clinician'),
     (7003, 3003, 'Calcium + Vitamin D Tablets', 'As prescribed by the treating clinician'),
@@ -328,14 +387,58 @@ INSERT INTO prescriptions (id, appointment_id, medicine_details, dosage) VALUES
     (7019, 3019, 'Saline Nebulization Solution', 'As prescribed by the treating clinician'),
     (7020, 3020, 'Artificial Tears Eye Drops', 'As prescribed by the treating clinician');
 
+-- =====================================================================
+-- KEEP AUTO-INCREMENT COUNTERS ALIGNED WITH PRESERVED DATA
+-- =====================================================================
+-- Seed rows intentionally retain their historical IDs. These migration-safe
+-- adjustments ensure a pre-existing database starts each table at max(id)+1
+-- even when its AUTO_INCREMENT counter was created before the seed load.
 
--- =====================================================
+SET @next_users_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM users);
+SET @next_users_sql = CONCAT('ALTER TABLE users AUTO_INCREMENT = ', @next_users_id);
+PREPARE next_users_stmt FROM @next_users_sql;
+EXECUTE next_users_stmt;
+DEALLOCATE PREPARE next_users_stmt;
 
--- 9. USERS: EXACTLY 2 ACCOUNTS
+SET @next_doctors_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM doctors);
+SET @next_doctors_sql = CONCAT('ALTER TABLE doctors AUTO_INCREMENT = ', @next_doctors_id);
+PREPARE next_doctors_stmt FROM @next_doctors_sql;
+EXECUTE next_doctors_stmt;
+DEALLOCATE PREPARE next_doctors_stmt;
 
--- =====================================================
+SET @next_patients_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM patients);
+SET @next_patients_sql = CONCAT('ALTER TABLE patients AUTO_INCREMENT = ', @next_patients_id);
+PREPARE next_patients_stmt FROM @next_patients_sql;
+EXECUTE next_patients_stmt;
+DEALLOCATE PREPARE next_patients_stmt;
 
-INSERT INTO users (id, username, password, role) VALUES
-    (1, 'Piku', 'Piku@Apollo2026!', 'ADMIN'),
-    (2, 'KaaL-EL', 'KaaLEL@Apollo2026!', 'STAFF');
+SET @next_appointments_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM appointments);
+SET @next_appointments_sql = CONCAT('ALTER TABLE appointments AUTO_INCREMENT = ', @next_appointments_id);
+PREPARE next_appointments_stmt FROM @next_appointments_sql;
+EXECUTE next_appointments_stmt;
+DEALLOCATE PREPARE next_appointments_stmt;
+
+SET @next_bills_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM bills);
+SET @next_bills_sql = CONCAT('ALTER TABLE bills AUTO_INCREMENT = ', @next_bills_id);
+PREPARE next_bills_stmt FROM @next_bills_sql;
+EXECUTE next_bills_stmt;
+DEALLOCATE PREPARE next_bills_stmt;
+
+SET @next_followups_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM followups);
+SET @next_followups_sql = CONCAT('ALTER TABLE followups AUTO_INCREMENT = ', @next_followups_id);
+PREPARE next_followups_stmt FROM @next_followups_sql;
+EXECUTE next_followups_stmt;
+DEALLOCATE PREPARE next_followups_stmt;
+
+SET @next_medicines_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM medicines);
+SET @next_medicines_sql = CONCAT('ALTER TABLE medicines AUTO_INCREMENT = ', @next_medicines_id);
+PREPARE next_medicines_stmt FROM @next_medicines_sql;
+EXECUTE next_medicines_stmt;
+DEALLOCATE PREPARE next_medicines_stmt;
+
+SET @next_prescriptions_id = (SELECT COALESCE(MAX(id), 0) + 1 FROM prescriptions);
+SET @next_prescriptions_sql = CONCAT('ALTER TABLE prescriptions AUTO_INCREMENT = ', @next_prescriptions_id);
+PREPARE next_prescriptions_stmt FROM @next_prescriptions_sql;
+EXECUTE next_prescriptions_stmt;
+DEALLOCATE PREPARE next_prescriptions_stmt;
 

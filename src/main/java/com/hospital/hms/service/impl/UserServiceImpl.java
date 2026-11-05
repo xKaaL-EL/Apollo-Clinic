@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService {
         return switch (user.getRole().trim().toUpperCase()) {
             case "ADMIN" -> "ADMIN";
             case "RECEPTIONIST", "STAFF" -> "RECEPTIONIST";
+            case "DOCTOR" -> "DOCTOR";
             default -> null;
         };
     }

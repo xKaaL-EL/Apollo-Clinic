@@ -133,7 +133,7 @@ The application supports two roles. The table below summarises the intended acce
 | Doctors | Full access | View only |
 | Patients | Full access | Full access |
 | Appointments | Full access | Full access |
-| Follow-ups | Full access | Full access |
+| Follow-ups | Full access | View only |
 | Bills | Full access | View and PDF access |
 | Prescriptions | Full access | View and PDF access |
 | Medicines | Full access | Check the configured authorization rules |

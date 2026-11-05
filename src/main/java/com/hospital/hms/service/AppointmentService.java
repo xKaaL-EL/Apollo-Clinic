@@ -10,4 +10,5 @@ public interface AppointmentService {
     AppointmentDto getAppointmentById(Long id);
     List<AppointmentDto> getAllAppointments(String sortBy);
     List<AppointmentDto> searchAppointments(String query);
+    List<AppointmentDto> getAppointmentsForDoctorUser(Long userId);
 }

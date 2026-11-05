@@ -37,11 +37,13 @@ public class AuthApiController {
         if (user != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("hms_username", user.getUsername());
+            session.setAttribute("hms_user_id", user.getId());
             session.setAttribute("hms_role", userService.effectiveRole(user));
             response.put("success", true);
             response.put("message", "Login successful");
             response.put("username", user.getUsername());
             response.put("role", userService.effectiveRole(user));
+            response.put("redirect", "DOCTOR".equals(userService.effectiveRole(user)) ? "/doctor/dashboard" : "/dashboard");
             return ResponseEntity.ok(response);
         } else {
             response.put("success", false);
@@ -56,8 +58,9 @@ public class AuthApiController {
         if (session == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         Object username = session.getAttribute("hms_username");
         Object role = session.getAttribute("hms_role");
-        if (username == null || role == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        return ResponseEntity.ok(Map.of("username", username, "role", role));
+        Object userId = session.getAttribute("hms_user_id");
+        if (username == null || role == null || userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.ok(Map.of("username", username, "role", role, "userId", userId));
     }
 
     @org.springframework.web.bind.annotation.PostMapping("/logout")

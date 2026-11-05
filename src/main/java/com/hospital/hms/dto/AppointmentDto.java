@@ -20,6 +20,8 @@ public class AppointmentDto {
     @NotBlank(message = "Appointment time is required")
     private String time;
 
+    private String ailment;
+
     public AppointmentDto() {}
 
     public AppointmentDto(Long id, Long patientId, String patientName, Long doctorId, String doctorName, String date, String time) {
@@ -52,4 +54,6 @@ public class AppointmentDto {
 
     public String getTime() { return time; }
     public void setTime(String time) { this.time = time; }
+    public String getAilment() { return ailment; }
+    public void setAilment(String ailment) { this.ailment = ailment; }
 }

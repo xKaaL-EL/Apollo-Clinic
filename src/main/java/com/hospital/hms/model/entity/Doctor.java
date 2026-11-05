@@ -27,6 +27,10 @@ public class Doctor {
     @Column(nullable = false)
     private String contact;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "account_id", unique = true)
+    private User account;
+
     public Doctor() {}
 
     public Doctor(Long id, String name, Gender gender, Double age, String specialization, String contact) {
@@ -55,4 +59,7 @@ public class Doctor {
 
     public String getContact() { return contact; }
     public void setContact(String contact) { this.contact = contact; }
+
+    public User getAccount() { return account; }
+    public void setAccount(User account) { this.account = account; }
 }

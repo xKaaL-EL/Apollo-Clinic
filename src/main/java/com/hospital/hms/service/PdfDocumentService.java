@@ -81,6 +81,7 @@ public class PdfDocumentService {
             addKeyValueTable(document, new String[][]{
                     {"Prescription ID", value(prescription.getId())},
                     {"Appointment ID", value(prescription.getAppointment().getId())},
+                    {"Prescription Date", value(prescription.getPrescriptionDate() != null ? prescription.getPrescriptionDate() : prescription.getAppointment().getDate())},
                     {"Appointment Date", value(prescription.getAppointment().getDate())},
                     {"Appointment Time", value(prescription.getAppointment().getTime())}
             });

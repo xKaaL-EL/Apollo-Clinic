@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/prescriptions")
@@ -27,27 +28,46 @@ public class PrescriptionApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PrescriptionDto>> getAllPrescriptions(@RequestParam(value = "sortBy", required = false) String sortBy) {
+    public ResponseEntity<List<PrescriptionDto>> getAllPrescriptions(@RequestParam(value = "sortBy", required = false) String sortBy,
+                                                                      HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))) {
+            return ResponseEntity.ok(prescriptionService.getPrescriptionsForDoctorUser((Long) session.getAttribute("hms_user_id")));
+        }
         return ResponseEntity.ok(prescriptionService.getAllPrescriptions(sortBy));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<PrescriptionDto>> searchPrescriptions(@RequestParam("query") String query) {
+    public ResponseEntity<List<PrescriptionDto>> searchPrescriptions(@RequestParam("query") String query, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))) {
+            return ResponseEntity.ok(prescriptionService.searchPrescriptionsForDoctorUser(query, (Long) session.getAttribute("hms_user_id")));
+        }
         return ResponseEntity.ok(prescriptionService.searchPrescriptions(query));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PrescriptionDto> getPrescriptionById(@PathVariable("id") Long id) {
+    public ResponseEntity<PrescriptionDto> getPrescriptionById(@PathVariable("id") Long id, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))
+                && !prescriptionService.canDoctorAccessPrescription(id, (Long) session.getAttribute("hms_user_id"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return ResponseEntity.ok(prescriptionService.getPrescriptionById(id));
     }
 
     @GetMapping("/{id}/pdf")
-    public ResponseEntity<byte[]> viewPrescriptionPdf(@PathVariable("id") Long id) {
+    public ResponseEntity<byte[]> viewPrescriptionPdf(@PathVariable("id") Long id, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))
+                && !prescriptionService.canDoctorAccessPrescription(id, (Long) session.getAttribute("hms_user_id"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return pdfResponse(pdfDocumentService.generatePrescriptionPdf(id), id, false);
     }
 
     @GetMapping("/{id}/pdf/download")
-    public ResponseEntity<byte[]> downloadPrescriptionPdf(@PathVariable("id") Long id) {
+    public ResponseEntity<byte[]> downloadPrescriptionPdf(@PathVariable("id") Long id, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))
+                && !prescriptionService.canDoctorAccessPrescription(id, (Long) session.getAttribute("hms_user_id"))) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         return pdfResponse(pdfDocumentService.generatePrescriptionPdf(id), id, true);
     }
 
@@ -60,17 +80,27 @@ public class PrescriptionApiController {
     }
 
     @PostMapping
-    public ResponseEntity<PrescriptionDto> createPrescription(@Valid @RequestBody PrescriptionDto prescriptionDto) {
+    public ResponseEntity<PrescriptionDto> createPrescription(@Valid @RequestBody PrescriptionDto prescriptionDto, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))) {
+            return new ResponseEntity<>(prescriptionService.createPrescriptionForDoctor(prescriptionDto, (Long) session.getAttribute("hms_user_id")), HttpStatus.CREATED);
+        }
         return new ResponseEntity<>(prescriptionService.createPrescription(prescriptionDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PrescriptionDto> updatePrescription(@PathVariable("id") Long id, @Valid @RequestBody PrescriptionDto prescriptionDto) {
+    public ResponseEntity<PrescriptionDto> updatePrescription(@PathVariable("id") Long id, @Valid @RequestBody PrescriptionDto prescriptionDto, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))) {
+            return ResponseEntity.ok(prescriptionService.updatePrescriptionForDoctor(id, prescriptionDto, (Long) session.getAttribute("hms_user_id")));
+        }
         return ResponseEntity.ok(prescriptionService.updatePrescription(id, prescriptionDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePrescription(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletePrescription(@PathVariable("id") Long id, HttpSession session) {
+        if ("DOCTOR".equals(session.getAttribute("hms_role"))) {
+            prescriptionService.deletePrescriptionForDoctor(id, (Long) session.getAttribute("hms_user_id"));
+            return ResponseEntity.noContent().build();
+        }
         prescriptionService.deletePrescription(id);
         return ResponseEntity.noContent().build();
     }

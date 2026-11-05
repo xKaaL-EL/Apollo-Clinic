@@ -4,9 +4,14 @@ import com.hospital.hms.dto.FollowUpDto;
 import com.hospital.hms.exception.ResourceNotFoundException;
 import com.hospital.hms.model.entity.FollowUp;
 import com.hospital.hms.model.entity.Patient;
+import com.hospital.hms.model.entity.Appointment;
 import com.hospital.hms.repository.FollowUpRepository;
 import com.hospital.hms.repository.PatientRepository;
+import com.hospital.hms.repository.AppointmentRepository;
 import com.hospital.hms.service.FollowUpService;
+import com.hospital.hms.service.DoctorAccessService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +23,15 @@ public class FollowUpServiceImpl implements FollowUpService {
 
     private final FollowUpRepository followUpRepository;
     private final PatientRepository patientRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final DoctorAccessService doctorAccessService;
 
     @Autowired
-    public FollowUpServiceImpl(FollowUpRepository followUpRepository, PatientRepository patientRepository) {
+    public FollowUpServiceImpl(FollowUpRepository followUpRepository, PatientRepository patientRepository, AppointmentRepository appointmentRepository, DoctorAccessService doctorAccessService) {
         this.followUpRepository = followUpRepository;
         this.patientRepository = patientRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.doctorAccessService = doctorAccessService;
     }
 
     @Override
@@ -32,6 +41,7 @@ public class FollowUpServiceImpl implements FollowUpService {
 
         FollowUp followUp = new FollowUp();
         followUp.setPatient(patient);
+        if (dto.getAppointmentId() != null) followUp.setAppointment(appointmentRepository.findById(dto.getAppointmentId()).orElseThrow(() -> new ResourceNotFoundException("Appointment not found")));
         followUp.setNextDate(dto.getNextDate());
         followUp.setNotes(dto.getNotes());
 
@@ -48,6 +58,7 @@ public class FollowUpServiceImpl implements FollowUpService {
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found with id: " + dto.getPatientId()));
 
         followUp.setPatient(patient);
+        if (dto.getAppointmentId() != null) followUp.setAppointment(appointmentRepository.findById(dto.getAppointmentId()).orElseThrow(() -> new ResourceNotFoundException("Appointment not found")));
         followUp.setNextDate(dto.getNextDate());
         followUp.setNotes(dto.getNotes());
 
@@ -95,13 +106,23 @@ public class FollowUpServiceImpl implements FollowUpService {
                 .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override public FollowUpDto createFollowUpForDoctor(FollowUpDto dto, Long userId) { validateAppointment(dto.getAppointmentId(), dto.getPatientId(), userId); return createFollowUp(dto); }
+    @Override public FollowUpDto updateFollowUpForDoctor(Long id, FollowUpDto dto, Long userId) { FollowUp old = owned(id, userId); validateAppointment(dto.getAppointmentId(), dto.getPatientId(), userId); return updateFollowUp(id, dto); }
+    @Override public void deleteFollowUpForDoctor(Long id, Long userId) { owned(id, userId); deleteFollowUp(id); }
+    @Override public FollowUpDto getFollowUpForDoctor(Long id, Long userId) { owned(id, userId); return getFollowUpById(id); }
+    @Override public List<FollowUpDto> getFollowUpsForDoctor(Long userId) { return followUpRepository.findAllByAppointmentDoctorAccountId(userId).stream().map(this::mapToDto).collect(Collectors.toList()); }
+
+    private FollowUp owned(Long id, Long userId) { FollowUp f = followUpRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Follow-up not found with id: " + id)); if (f.getAppointment() == null || !doctorAccessService.ownsAppointment(userId, f.getAppointment().getId())) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Follow-up is not assigned to this doctor"); return f; }
+    private void validateAppointment(Long appointmentId, Long patientId, Long userId) { if (appointmentId == null || !doctorAccessService.ownsAppointment(userId, appointmentId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Doctors may use only their assigned appointments"); Appointment a = appointmentRepository.findById(appointmentId).orElseThrow(() -> new ResourceNotFoundException("Appointment not found")); if (!a.getPatient().getId().equals(patientId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Appointment does not belong to this patient"); }
+
     private FollowUpDto mapToDto(FollowUp followUp) {
-        return new FollowUpDto(
+        FollowUpDto dto = new FollowUpDto(
                 followUp.getId(),
                 followUp.getPatient().getId(),
                 followUp.getPatient().getName(),
                 followUp.getNextDate(),
-                followUp.getNotes()
-        );
+                followUp.getNotes());
+        if (followUp.getAppointment() != null) dto.setAppointmentId(followUp.getAppointment().getId());
+        return dto;
     }
 }

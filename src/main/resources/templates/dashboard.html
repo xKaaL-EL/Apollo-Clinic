@@ -108,6 +108,21 @@
                         <label class="form-label">Contact String</label>
                         <input type="text" class="form-control" id="docContact" required>
                     </div>
+                    <div id="doctorCredentials" class="border rounded p-3 mt-4">
+                        <h6 class="fw-bold mb-3">Doctor Login Credentials</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="docUsername">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" id="docPasswordLabel">Password</label>
+                            <input type="password" class="form-control" id="docPassword">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label" id="docConfirmPasswordLabel">Confirm Password</label>
+                            <input type="password" class="form-control" id="docConfirmPassword">
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -349,8 +364,8 @@
 <script>
     // 1. Verify the server-side session before loading dashboard data.
     let currentRole = null;
-    const receptionistCrudModules = ["patients", "appointments", "followups"];
-    const receptionistReadOnlyModules = ["doctors", "medicines"];
+    const receptionistCrudModules = ["patients", "appointments"];
+    const receptionistReadOnlyModules = ["doctors", "medicines", "followups"];
     const receptionistPdfModules = ["bills", "prescriptions"];
 
     async function initializeSession() {
@@ -670,6 +685,13 @@
             document.getElementById("doctorForm").reset();
             document.getElementById("docId").value = "";
             document.getElementById("doctorModalTitle").textContent = "Add New Doctor";
+            document.getElementById("doctorCredentials").style.display = "block";
+            document.getElementById("docUsername").value = "";
+            document.getElementById("docPasswordLabel").textContent = "Password";
+            document.getElementById("docConfirmPasswordLabel").textContent = "Confirm Password";
+            document.getElementById("docUsername").required = true;
+            document.getElementById("docPassword").required = true;
+            document.getElementById("docConfirmPassword").required = true;
             new bootstrap.Modal(document.getElementById("doctorModal")).show();
         } else if (currentModule === "patients") {
             document.getElementById("patientForm").reset();
@@ -726,6 +748,15 @@
                 document.getElementById("docSpec").value = item.specialization;
                 document.getElementById("docContact").value = item.contact;
                 document.getElementById("doctorModalTitle").textContent = `Modify Doctor ID: ${item.id}`;
+                document.getElementById("doctorCredentials").style.display = "block";
+                document.getElementById("docUsername").value = item.username || "";
+                document.getElementById("docPassword").value = "";
+                document.getElementById("docConfirmPassword").value = "";
+                document.getElementById("docPasswordLabel").textContent = "New Password";
+                document.getElementById("docConfirmPasswordLabel").textContent = "Confirm New Password";
+                document.getElementById("docUsername").required = false;
+                document.getElementById("docPassword").required = false;
+                document.getElementById("docConfirmPassword").required = false;
                 new bootstrap.Modal(document.getElementById("doctorModal")).show();
             } else if (currentModule === "patients") {
                 document.getElementById("pId").value = item.id;
@@ -787,7 +818,17 @@
                 },
                 body: JSON.stringify(bodyObj)
             });
-            if (!res.ok) throw new Error("Data submission transaction rejected.");
+            if (!res.ok) {
+                let message = "Data submission transaction rejected.";
+                try {
+                    const errorBody = await res.json();
+                    message = errorBody.message || errorBody.error || message;
+                } catch (_) {
+                    const text = await res.text();
+                    if (text) message = text;
+                }
+                throw new Error(message);
+            }
             
             // Close modal safely on success
             const modalEl = document.getElementById(modalId);
@@ -811,6 +852,9 @@
             specialization: document.getElementById("docSpec").value.trim(),
             contact: document.getElementById("docContact").value.trim()
         };
+        body.username = document.getElementById("docUsername").value.trim();
+        body.password = document.getElementById("docPassword").value;
+        body.confirmPassword = document.getElementById("docConfirmPassword").value;
         const method = id ? "PUT" : "POST";
         const url = id ? `/api/doctors/${id}` : "/api/doctors";
         saveFormSubmit(url, method, body, "doctorModal");

@@ -1,12 +1,15 @@
 package com.hospital.hms.controller.api;
 
 import com.hospital.hms.dto.DoctorDto;
+import com.hospital.hms.dto.DoctorProfileUpdateDto;
 import com.hospital.hms.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
 
@@ -19,6 +22,26 @@ public class DoctorApiController {
     @Autowired
     public DoctorApiController(DoctorService doctorService) {
         this.doctorService = doctorService;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<DoctorDto> getMyProfile(HttpServletRequest request) {
+        return ResponseEntity.ok(doctorService.getProfileByAccountId(sessionUserId(request)));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<DoctorDto> updateMyProfile(@Valid @RequestBody DoctorProfileUpdateDto profile,
+                                                     HttpServletRequest request) {
+        return ResponseEntity.ok(doctorService.updateProfileByAccountId(sessionUserId(request), profile));
+    }
+
+    private Long sessionUserId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object userId = session == null ? null : session.getAttribute("hms_user_id");
+        if (!(userId instanceof Number)) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+        }
+        return ((Number) userId).longValue();
     }
 
     @GetMapping

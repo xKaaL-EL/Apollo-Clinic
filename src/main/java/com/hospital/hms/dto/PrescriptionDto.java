@@ -2,6 +2,7 @@ package com.hospital.hms.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 public class PrescriptionDto {
     private Long id;
@@ -15,6 +16,8 @@ public class PrescriptionDto {
 
     @NotBlank(message = "Dosage instructions are required")
     private String dosage;
+    private Boolean editable;
+    private LocalDate prescriptionDate;
 
     public PrescriptionDto() {}
 
@@ -40,4 +43,8 @@ public class PrescriptionDto {
 
     public String getDosage() { return dosage; }
     public void setDosage(String dosage) { this.dosage = dosage; }
+    public Boolean getEditable() { return editable; }
+    public void setEditable(Boolean editable) { this.editable = editable; }
+    public LocalDate getPrescriptionDate() { return prescriptionDate; }
+    public void setPrescriptionDate(LocalDate prescriptionDate) { this.prescriptionDate = prescriptionDate; }
 }

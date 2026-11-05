@@ -92,6 +92,19 @@ public class DataSeeder implements CommandLineRunner {
         if (prescriptionRepository.count() == 0) {
             seedPrescriptions(basePath + "prescription.txt");
         }
+        linkDoctorAccounts();
+    }
+
+    private void linkDoctorAccounts() {
+        for (Doctor doctor : doctorRepository.findAll()) {
+            if (doctor.getAccount() != null) continue;
+            String[] nameParts = doctor.getName().replace("Dr. ", "").trim().toLowerCase().split("\\s+");
+            String username = String.join(".", nameParts);
+            userRepository.findByUsername(username).ifPresent(account -> {
+                doctor.setAccount(account);
+                doctorRepository.save(doctor);
+            });
+        }
     }
 
     private void seedDoctors(String path) {

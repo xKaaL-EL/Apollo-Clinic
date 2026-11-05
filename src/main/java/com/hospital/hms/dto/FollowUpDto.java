@@ -9,6 +9,8 @@ public class FollowUpDto {
     @NotNull(message = "Patient ID is required")
     private Long patientId;
     private String patientName;
+    private Long appointmentId;
+    private boolean editable;
 
     @NotBlank(message = "Follow-up date is required")
     private String nextDate;
@@ -24,6 +26,11 @@ public class FollowUpDto {
         this.nextDate = nextDate;
         this.notes = notes;
     }
+
+    public Long getAppointmentId() { return appointmentId; }
+    public void setAppointmentId(Long appointmentId) { this.appointmentId = appointmentId; }
+    public boolean isEditable() { return editable; }
+    public void setEditable(boolean editable) { this.editable = editable; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

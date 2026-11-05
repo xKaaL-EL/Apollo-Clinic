@@ -55,4 +55,10 @@ public class WebViewController {
     public String dashboardPage(Model model) {
         return indexPage(model);
     }
+
+    @GetMapping("/doctor/dashboard")
+    public String doctorDashboard() { return "doctor-dashboard"; }
+
+    @GetMapping("/patient-record/{patientId}")
+    public String patientRecord(@org.springframework.web.bind.annotation.PathVariable Long patientId) { return "patient-record"; }
 }

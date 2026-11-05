@@ -98,7 +98,7 @@ public class MedicineServiceImpl implements MedicineService {
 
     private Medicine mapToEntity(MedicineDto dto) {
         return new Medicine(
-                dto.getId(),
+                null,
                 dto.getName(),
                 dto.getStock(),
                 dto.getPrice()

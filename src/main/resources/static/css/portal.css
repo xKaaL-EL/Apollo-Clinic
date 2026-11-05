@@ -21,6 +21,14 @@ body.portal-body { background: var(--canvas); color: var(--ink); font-family: In
 .logout-link { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); border-radius: 10px; color: #fff; font-weight: 600; padding: 10px 12px; transition: background .2s ease, transform .2s ease; width: 100%; }
 .logout-link:hover { background: rgba(255,255,255,.16); transform: translateY(-1px); }
 .portal-main { flex: 1 1 0; margin-left: 248px; max-width: none; min-height: 100vh; min-width: 0; padding: 0 34px; width: auto; }
+.portal-main.portal-standalone { margin-left: 0; margin-right: auto; max-width: 1440px; padding-left: 34px; padding-right: 34px; width: 100%; }
+.portal-shell > .portal-header + .portal-main { margin-left: 0; margin-right: auto; max-width: 1440px; padding-left: 34px; padding-right: 34px; width: 100%; }
+.portal-shell:has(> .portal-header + .portal-main) { display: block; }
+.portal-shell:has(> .portal-header + .portal-main) > .portal-header { width: 100%; }
+.portal-shell > .portal-header + .portal-main .table-responsive { border-radius: 13px; box-shadow: var(--shadow); }
+.portal-shell > .portal-header + .portal-main .table thead th { background: var(--mint); border-bottom: 1px solid #c8ddcd; color: var(--forest); font-size: .73rem; letter-spacing: .06em; padding: 15px 16px; text-transform: uppercase; white-space: nowrap; }
+.portal-shell > .portal-header + .portal-main .table tbody tr:nth-child(even) { background: #f5faf6; }
+.portal-shell > .portal-header + .portal-main .table tbody td { border-color: #e4eee6; color: #385447; padding: 15px 16px; }
 .portal-header { align-items: center; border-bottom: 1px solid var(--line); display: flex; justify-content: center; margin-bottom: 24px; min-height: 92px; padding: 18px 52px; position: relative; }
 .portal-header-brand { align-items: center; display: flex; gap: 14px; justify-content: center; text-align: center; }
 .portal-header-brand i { color: var(--accent); font-size: 2.25rem; }
@@ -57,6 +65,9 @@ body.portal-body { background: var(--canvas); color: var(--ink); font-family: In
 .btn-primary:hover { background: linear-gradient(100deg, #1d5c3e, #277b51); transform: translateY(-1px); }
 .btn-action { border-radius: 8px; padding: 6px 9px; }
 .btn-outline-primary { border-color: var(--accent); color: var(--accent); }
+.table-sort-button { background: transparent; border: 0; color: inherit; font: inherit; font-weight: inherit; letter-spacing: inherit; padding: 0; text-transform: inherit; }
+.table-sort-button:hover { color: var(--accent-dark); }
+.record-primary-action, #newPrescription, #newFollowUp { font-size: 1rem; font-weight: 750; min-height: 48px; padding: 11px 18px; }
 .btn-outline-primary:hover { background: var(--accent); border-color: var(--accent); }
 .modal-content { animation: modalIn .22s ease-out; border: 0; border-radius: 18px; box-shadow: 0 20px 60px rgba(23,76,53,.2); overflow: hidden; }
 .modal-header { background: linear-gradient(110deg, var(--forest-deep), var(--accent)); color: #fff; padding: 20px 24px; }
@@ -67,6 +78,73 @@ body.portal-body { background: var(--canvas); color: var(--ink); font-family: In
 .form-control, .form-select { border: 1px solid #d2e1d6; border-radius: 9px; color: var(--ink); min-height: 43px; }
 .form-control:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 .22rem rgba(47,133,90,.16); }
 .portal-footer { border-top: 1px solid var(--line); color: #60776a; font-size: .92rem; font-weight: 600; letter-spacing: .01em; margin-top: 20px; padding: 13px 0 17px; text-align: center; }
+.doctor-header-actions { align-items: flex-end; display: flex; flex-direction: column; gap: 6px; }
+.doctor-signed-in { color: var(--muted); font-weight: 600; }
+.profile-modal { align-items: center; background: rgba(16,59,42,.38); display: flex; inset: 0; justify-content: center; opacity: 0; padding: 20px; pointer-events: none; position: fixed; transition: opacity .2s ease; visibility: hidden; z-index: 1100; }
+.profile-modal::before { backdrop-filter: blur(6px); content: ""; inset: 0; position: absolute; }
+.profile-modal.is-open { opacity: 1; pointer-events: auto; visibility: visible; }
+.profile-modal-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 20px 60px rgba(23,76,53,.25); max-height: calc(100vh - 40px); max-width: 720px; overflow: auto; position: relative; transform: translateY(10px) scale(.98); transition: transform .22s ease; width: 100%; }
+.profile-modal.is-open .profile-modal-card { transform: translateY(0) scale(1); }
+.profile-modal-header { align-items: center; background: linear-gradient(110deg, var(--forest-deep), var(--accent)); color: #fff; display: flex; justify-content: space-between; padding: 20px 24px; }
+.profile-modal-header h2 { font-size: 1.35rem; margin: 0; }
+.profile-eyebrow { color: #c6e7ce; margin-bottom: 3px; }
+.profile-close { background: transparent; border: 0; color: #fff; font-size: 1.1rem; opacity: .85; padding: 6px; }
+.profile-modal-body { padding: 24px; }
+.profile-fields { display: grid; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.profile-fields .form-control:read-only { background: #f3f8f4; color: var(--muted); }
+.profile-message { border-radius: 9px; display: none; font-weight: 600; margin-bottom: 16px; padding: 10px 12px; }
+.profile-message.is-error, .profile-message.is-success { display: block; }
+.profile-message.is-error { background: #fff0f1; border: 1px solid #f0c2c7; color: #a02f3c; }
+.profile-message.is-success { background: #e8f7ec; border: 1px solid #b9dfc2; color: #237143; }
+.profile-modal-footer { align-items: center; background: #f8fbf8; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; padding: 16px 24px; }
+.profile-edit-actions { display: flex; gap: 10px; }
+.profile-modal-open { overflow: hidden; }
+@media (max-width: 600px) { .doctor-header-actions { align-items: flex-start; margin-top: 12px; } .profile-fields { grid-template-columns: 1fr; } .profile-modal-header, .profile-modal-body, .profile-modal-footer { padding-left: 16px; padding-right: 16px; } }
+
+/* Standalone clinical pages use the same visual language as the Admin workspace. */
+.portal-shell:has(#appointmentsBody), .portal-shell:has(#patientSummary) { display: flex !important; flex-direction: column; min-height: 100vh; }
+.portal-shell:has(#appointmentsBody) .portal-header, .portal-shell:has(#patientSummary) .portal-header { flex: 0 0 auto; width: 100%; }
+.portal-shell:has(#appointmentsBody) .portal-main, .portal-shell:has(#patientSummary) .portal-main { flex: 1 0 auto; margin: 0 auto; max-width: 1440px; padding: 28px 34px 6px; width: 100%; }
+.portal-shell:has(#appointmentsBody) > .portal-footer, .portal-shell:has(#patientSummary) > .portal-footer { flex: 0 0 auto; margin: 20px auto 0; max-width: 1372px; width: calc(100% - 68px); }
+.doctor-page-heading { margin-bottom: 24px; }
+.eyebrow { color: var(--accent-dark); display: block; font-size: .73rem; font-weight: 800; letter-spacing: .08em; margin-bottom: 5px; text-transform: uppercase; }
+.doctor-page-heading .eyebrow, .portal-card-heading .eyebrow { color: var(--accent-dark); display: block; font-size: .73rem; font-weight: 800; letter-spacing: .08em; margin-bottom: 5px; text-transform: uppercase; }
+.doctor-page-heading h1 { color: var(--forest); font-size: 2rem; font-weight: 800; letter-spacing: -.02em; margin: 0; }
+.doctor-page-heading p { color: var(--muted); margin: 5px 0 0; }
+.doctor-summary { margin-bottom: 22px; }
+.doctor-summary .summary-card strong { overflow-wrap: anywhere; }
+.portal-section-card { margin-bottom: 22px; overflow: hidden; }
+.portal-section-card:last-child { margin-bottom: 0; }
+.portal-card-heading { align-items: center; background: #f8fbf8; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 18px; padding: 17px 22px; }
+.portal-shell:has(#appointmentsBody) .card-header, .portal-shell:has(#patientSummary) .card-header { align-items: center; background: #f8fbf8; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 18px; padding: 17px 22px; }
+.portal-shell:has(#appointmentsBody) .card-header h2, .portal-shell:has(#patientSummary) .card-header h2 { color: var(--forest); font-size: 1.15rem; font-weight: 800; margin: 0; }
+.portal-shell:has(#appointmentsBody) .portal-card > .table-responsive, .portal-shell:has(#patientSummary) .portal-card > .table-responsive { border: 0; border-radius: 0; box-shadow: none; padding: 18px 22px 22px; }
+.portal-shell:has(#appointmentsBody) .portal-card > .table-responsive .table, .portal-shell:has(#patientSummary) .portal-card > .table-responsive .table { margin: 0; width: 100%; }
+.portal-shell:has(#appointmentsBody) .table thead th, .portal-shell:has(#patientSummary) .table thead th { background: var(--mint); border-bottom: 1px solid #c8ddcd; color: var(--forest); font-size: .73rem; font-weight: 800; letter-spacing: .06em; padding: 15px 16px; text-transform: uppercase; white-space: nowrap; }
+.portal-shell:has(#appointmentsBody) .table tbody tr:nth-child(even), .portal-shell:has(#patientSummary) .table tbody tr:nth-child(even) { background: #f5faf6; }
+.portal-shell:has(#appointmentsBody) .table tbody td, .portal-shell:has(#patientSummary) .table tbody td { border-color: #e4eee6; color: #385447; padding: 15px 16px; vertical-align: middle; }
+.portal-shell:has(#appointmentsBody) .table tbody tr, .portal-shell:has(#patientSummary) .table tbody tr { transition: background .18s ease, box-shadow .18s ease; }
+.portal-shell:has(#appointmentsBody) .table tbody tr:hover, .portal-shell:has(#patientSummary) .table tbody tr:hover { background: #e9f5ec; box-shadow: inset 3px 0 0 var(--accent); }
+.portal-card-heading h2 { color: var(--forest); font-size: 1.15rem; font-weight: 800; margin: 0; }
+.portal-table-shell { padding: 18px 22px 22px; }
+.portal-data-table { table-layout: auto; width: 100%; }
+.portal-data-table thead th { background: var(--mint); border-bottom: 1px solid #c8ddcd; color: var(--forest); font-size: .73rem; font-weight: 800; letter-spacing: .06em; padding: 15px 16px; text-transform: uppercase; white-space: nowrap; }
+.portal-data-table tbody tr:nth-child(even) { background: #f5faf6; }
+.portal-data-table tbody td { border-color: #e4eee6; color: #385447; padding: 15px 16px; vertical-align: middle; }
+.portal-data-table tbody tr { transition: background .18s ease, box-shadow .18s ease; }
+.portal-data-table tbody tr:hover { background: #e9f5ec; box-shadow: inset 3px 0 0 var(--accent); }
+.portal-data-table .wrap-cell { max-width: 360px; overflow-wrap: anywhere; white-space: normal; }
+.portal-data-table .actions-column { min-width: 190px; }
+.portal-data-table .actions-cell { min-width: 190px; white-space: normal; }
+.portal-data-table .actions-cell .btn { margin: 2px 4px 2px 0; }
+.portal-data-table .empty-state { color: var(--muted); padding: 28px 16px; text-align: center; }
+.record-id { background: var(--mint); border: 1px solid #c8ddcd; border-radius: 999px; color: var(--forest); font-size: .78rem; font-weight: 800; padding: 7px 11px; white-space: nowrap; }
+.profile-grid { display: grid; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 22px; }
+.profile-item { background: #f8fbf8; border: 1px solid var(--line); border-radius: 12px; min-height: 82px; padding: 14px 16px; }
+.profile-item span { color: var(--muted); display: block; font-size: .73rem; font-weight: 800; letter-spacing: .06em; margin-bottom: 7px; text-transform: uppercase; }
+.profile-item strong { color: var(--ink); display: block; font-size: 1rem; overflow-wrap: anywhere; }
+@media (max-width: 900px) { .portal-shell:has(#appointmentsBody) .portal-main, .portal-shell:has(#patientSummary) .portal-main { padding-left: 20px; padding-right: 20px; } .profile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .portal-shell:has(#appointmentsBody) > .portal-footer, .portal-shell:has(#patientSummary) > .portal-footer { width: calc(100% - 40px); } }
+@media (max-width: 600px) { .portal-shell:has(#appointmentsBody) .portal-main, .portal-shell:has(#patientSummary) .portal-main { padding-left: 14px; padding-right: 14px; } .doctor-page-heading { align-items: flex-start; flex-direction: column; } .portal-card-heading { align-items: flex-start; flex-direction: column; } .profile-grid { grid-template-columns: 1fr; padding: 16px; } .portal-table-shell { padding: 12px 14px 16px; } .portal-shell:has(#appointmentsBody) > .portal-footer, .portal-shell:has(#patientSummary) > .portal-footer { width: calc(100% - 28px); } }
 
 body.login-page { background: linear-gradient(135deg, #edf8ef, #d7efdc 48%, #b8dec0); color: var(--ink); min-height: 100vh; overflow: hidden; position: relative; }
 body.login-page::before, body.login-page::after { border-radius: 50%; content: ""; filter: blur(4px); position: absolute; }
@@ -111,5 +189,7 @@ body.login-page::after { animation: floatOrb 14s ease-in-out infinite reverse; b
 @media (max-width: 900px) { .portal-sidebar { width: 220px; } .portal-main { margin-left: 220px; padding-left: 20px; padding-right: 20px; } }
 @media (max-width: 1000px) { body.login-page { overflow-y: auto; } .login-layout { grid-template-columns: minmax(0, 1fr); max-width: 680px; padding-left: 24px; padding-right: 24px; } .login-visual { min-height: 420px; } .login-card { justify-self: center; } }
 @media (max-width: 700px) { .portal-shell { display: block; } .portal-sidebar { height: auto; min-height: auto; overflow: visible; position: relative; width: 100%; } .sidebar-nav { flex: 0 0 auto; max-height: none; overflow: visible; } .portal-main { flex: 1 1 auto; margin-left: 0; padding: 0 14px; width: auto; } .summary-strip { grid-template-columns: 1fr; } .portal-header { margin-bottom: 16px; min-height: 80px; padding-left: 10px; padding-right: 36px; } .portal-header-brand strong { font-size: 1.35rem; } .portal-header-brand i { font-size: 1.75rem; } .portal-header-brand small { font-size: .82rem; } .content-heading { align-items: flex-start; gap: 12px; } .content-heading h1 { font-size: 1.7rem; } .dashboard-controls { align-items: stretch !important; } .dashboard-controls > div { flex-wrap: wrap; } }
+@media (max-width: 700px) { .portal-main.portal-standalone { padding-left: 14px; padding-right: 14px; } }
+@media (max-width: 700px) { .portal-shell > .portal-header + .portal-main { padding-left: 14px; padding-right: 14px; } }
 @media (max-width: 600px) { .login-layout { gap: 22px; padding: 20px 14px 12px; } .login-visual { min-height: 360px; } .login-visual-copy { left: 26px; top: 28px; } .login-visual-copy p { font-size: .9rem; } .login-card { border-radius: 24px; } .login-brand { padding: 30px 24px 18px; } .login-brand h1 { font-size: 1.65rem; } .login-body { padding: 10px 24px 20px; } .login-features { margin: 0 24px 26px; } .login-feature { font-size: .65rem; padding: 0 4px; } .login-footer { width: calc(100% - 28px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }

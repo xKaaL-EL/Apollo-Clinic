@@ -97,7 +97,7 @@ public class PatientServiceImpl implements PatientService {
 
     private Patient mapToEntity(PatientDto patientDto) {
         return new Patient(
-                patientDto.getId(),
+                null,
                 patientDto.getName(),
                 patientDto.getGender(),
                 patientDto.getAge(),

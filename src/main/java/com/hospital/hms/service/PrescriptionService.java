@@ -10,4 +10,10 @@ public interface PrescriptionService {
     PrescriptionDto getPrescriptionById(Long id);
     List<PrescriptionDto> getAllPrescriptions(String sortBy);
     List<PrescriptionDto> searchPrescriptions(String query);
+    PrescriptionDto createPrescriptionForDoctor(PrescriptionDto dto, Long userId);
+    PrescriptionDto updatePrescriptionForDoctor(Long id, PrescriptionDto dto, Long userId);
+    void deletePrescriptionForDoctor(Long id, Long userId);
+    boolean canDoctorAccessPrescription(Long id, Long userId);
+    List<PrescriptionDto> getPrescriptionsForDoctorUser(Long userId);
+    List<PrescriptionDto> searchPrescriptionsForDoctorUser(String query, Long userId);
 }

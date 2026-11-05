@@ -1,6 +1,7 @@
 package com.hospital.hms.model.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "prescriptions")
@@ -19,6 +20,9 @@ public class Prescription {
 
     @Column(nullable = false)
     private String dosage;
+
+    @Column(name = "prescription_date")
+    private LocalDate prescriptionDate;
 
     public Prescription() {}
 
@@ -40,4 +44,6 @@ public class Prescription {
 
     public String getDosage() { return dosage; }
     public void setDosage(String dosage) { this.dosage = dosage; }
+    public LocalDate getPrescriptionDate() { return prescriptionDate; }
+    public void setPrescriptionDate(LocalDate prescriptionDate) { this.prescriptionDate = prescriptionDate; }
 }

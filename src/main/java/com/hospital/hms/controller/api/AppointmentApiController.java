@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -24,6 +25,11 @@ public class AppointmentApiController {
     @GetMapping
     public ResponseEntity<List<AppointmentDto>> getAllAppointments(@RequestParam(value = "sortBy", required = false) String sortBy) {
         return ResponseEntity.ok(appointmentService.getAllAppointments(sortBy));
+    }
+
+    @GetMapping("/doctor/mine")
+    public ResponseEntity<List<AppointmentDto>> getMyAppointments(HttpSession session) {
+        return ResponseEntity.ok(appointmentService.getAppointmentsForDoctorUser((Long) session.getAttribute("hms_user_id")));
     }
 
     @GetMapping("/search")

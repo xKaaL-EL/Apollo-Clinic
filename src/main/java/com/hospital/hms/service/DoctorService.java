@@ -1,6 +1,7 @@
 package com.hospital.hms.service;
 
 import com.hospital.hms.dto.DoctorDto;
+import com.hospital.hms.dto.DoctorProfileUpdateDto;
 import java.util.List;
 
 public interface DoctorService {
@@ -10,4 +11,6 @@ public interface DoctorService {
     DoctorDto getDoctorById(Long id);
     List<DoctorDto> getAllDoctors(String sortBy);
     List<DoctorDto> searchDoctors(String query);
+    DoctorDto getProfileByAccountId(Long accountId);
+    DoctorDto updateProfileByAccountId(Long accountId, DoctorProfileUpdateDto profile);
 }

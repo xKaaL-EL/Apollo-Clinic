@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Collectors;
 
 @Service
@@ -107,8 +111,29 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
+    @Override
+    public List<AppointmentDto> getAppointmentsForDoctorUser(Long userId) {
+        return appointmentRepository.findAllByDoctorAccountId(userId).stream()
+                .sorted((a, b) -> {
+                    int date = parseDate(a.getDate()).compareTo(parseDate(b.getDate()));
+                    return date != 0 ? date : parseTime(a.getTime()).compareTo(parseTime(b.getTime()));
+                })
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private LocalDate parseDate(String value) {
+        try { return LocalDate.parse(value); }
+        catch (DateTimeParseException ex) { return LocalDate.MAX; }
+    }
+
+    private LocalTime parseTime(String value) {
+        try { return LocalTime.parse(value, DateTimeFormatter.ofPattern("hh:mm a")); }
+        catch (DateTimeParseException ex) { return LocalTime.MAX; }
+    }
+
     private AppointmentDto mapToDto(Appointment appointment) {
-        return new AppointmentDto(
+        AppointmentDto dto = new AppointmentDto(
                 appointment.getId(),
                 appointment.getPatient().getId(),
                 appointment.getPatient().getName(),
@@ -117,5 +142,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 appointment.getDate(),
                 appointment.getTime()
         );
+        dto.setAilment(appointment.getPatient().getAilment());
+        return dto;
     }
 }

@@ -10,4 +10,9 @@ public interface FollowUpService {
     FollowUpDto getFollowUpById(Long id);
     List<FollowUpDto> getAllFollowUps(String sortBy);
     List<FollowUpDto> searchFollowUps(String query);
+    FollowUpDto createFollowUpForDoctor(FollowUpDto dto, Long userId);
+    FollowUpDto updateFollowUpForDoctor(Long id, FollowUpDto dto, Long userId);
+    void deleteFollowUpForDoctor(Long id, Long userId);
+    FollowUpDto getFollowUpForDoctor(Long id, Long userId);
+    List<FollowUpDto> getFollowUpsForDoctor(Long userId);
 }

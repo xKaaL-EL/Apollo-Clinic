@@ -14,6 +14,10 @@ public class FollowUp {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "appointment_id")
+    private Appointment appointment;
+
     @Column(name = "next_date", nullable = false)
     private String nextDate;
 
@@ -34,6 +38,8 @@ public class FollowUp {
 
     public Patient getPatient() { return patient; }
     public void setPatient(Patient patient) { this.patient = patient; }
+    public Appointment getAppointment() { return appointment; }
+    public void setAppointment(Appointment appointment) { this.appointment = appointment; }
 
     public String getNextDate() { return nextDate; }
     public void setNextDate(String nextDate) { this.nextDate = nextDate; }
