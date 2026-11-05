@@ -300,6 +300,12 @@ Apollo-Clinic/
 ### Login Page
 ![Login](ScreenShots/login.png)
 
+### Doctor Dashboard
+![Doctor Dashboard](ScreenShots/doctor-dashboard.png)
+
+### Patient Medical Record
+![Patient Medical Record](ScreenShots/patient-record.png)
+
 ### Doctor Management
 ![Doctors](ScreenShots/Screenshot%20(19).png)
 
